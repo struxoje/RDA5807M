@@ -74,8 +74,6 @@ public:
 
     uint16_t readRegisterFromDevice(Register reg);
 
-    void printRegisterMap();
-
     // FUNCTIONS USED TO ENABLE/DISABLE RADIO MODES
     StatusResult setMute(bool muteEnable, bool writeResultToDevice = true);
 
@@ -137,7 +135,9 @@ public:
 
     bool isFmReady();
 
-    void printStatus();
+    std::string getStatusString();
+
+    std::string getRegisterMap();
 
     static std::string statusResultToString(StatusResult toConvert);
 
@@ -208,7 +208,7 @@ private:
     // Private interface functions //
     /////////////////////////////////
     StatusResult setI2cAddress(uint8_t addr);
-    StatusResult conditionallyWriteRegister(Register regToWrite, bool shouldWrite);
+    StatusResult conditionallyWriteRegisterToDevice(Register regToWrite, bool shouldWrite);
     void init();
 
     //////////////////////////////

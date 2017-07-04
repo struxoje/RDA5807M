@@ -26,9 +26,20 @@ public:
 
     RadioResult<RDA5807M::StatusResult> setFrequency(int freq);
     RadioResult<RDA5807M::StatusResult> setVolume(int vol);
-    RadioResult<RDA5807M::StatusResult> printStatus(int UNUSED);
     RadioResult<RDA5807M::StatusResult> setMute(int muteEnable);
     RadioResult<RDA5807M::StatusResult> setBassBoost(int bassBoostEnable);
+    RadioResult<RDA5807M::StatusResult> setRadioEnableState(int radioEnable);
+    RadioResult<RDA5807M::StatusResult> setHighImpedanceOutput(int highImpedanceOutputEnable);
+    RadioResult<RDA5807M::StatusResult> setStereo(int stereoEnable);
+    RadioResult<RDA5807M::StatusResult> setSeek(int seekEnable);
+    RadioResult<RDA5807M::StatusResult> setRDS(int rdsEnable);
+    RadioResult<RDA5807M::StatusResult> setNewMethod(int newMethodEnable);
+    RadioResult<RDA5807M::StatusResult> setSoftReset(int softResetEnable);
+    RadioResult<RDA5807M::StatusResult> setSoftMute(int softMuteEnable);
+
+    RadioResult<std::string> getStatusString(int UNUSED);
+    RadioResult<std::string> getRegisterMapString(int UNUSED);
+
 
 private:
     ///////////////////////////

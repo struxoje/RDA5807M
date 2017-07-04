@@ -186,12 +186,17 @@ void RDA5807M::readDeviceRegistersAndStoreLocally()
     }
 }
 
-void RDA5807M::printRegisterMap()
+std::string RDA5807M::getRegisterMap()
 {
+    char buffer[50] = {0};
+    std::string regMap{""};
     for (uint16_t regIdx = 0; regIdx < REGISTER_MAP_SIZE_REGISTERS; ++regIdx)
     {
-        std::printf("Reg: 0x%02x; Value: 0x%04x\n", regIdx, registers[regIdx]);
+        std::sprintf(buffer,"Reg: 0x%02x; Value: 0x%04x\n", regIdx, registers[regIdx]);
+        regMap.append(buffer);
     }
+
+    return regMap;
 }
 
 /**
@@ -201,7 +206,7 @@ RDA5807M::StatusResult RDA5807M::setMute(bool muteEnable, bool writeResultToDevi
 {
     setRegister(REG_0x02, Util::boolToInteger(!muteEnable), DMUTE);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -212,7 +217,7 @@ RDA5807M::StatusResult RDA5807M::setHighImpedanceOutput(bool highImpedanceEnable
 {
     setRegister(REG_0x02, Util::boolToInteger(!highImpedanceEnable), DHIZ);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -223,7 +228,7 @@ RDA5807M::StatusResult RDA5807M::setStereo(bool stereoEnable, bool writeResultTo
 {
     setRegister(REG_0x02, Util::boolToInteger(!stereoEnable), DMONO);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -234,7 +239,7 @@ RDA5807M::StatusResult RDA5807M::setBassBoost(bool bassBoostEnable, bool writeRe
 {
     setRegister(REG_0x02, Util::boolToInteger(bassBoostEnable), DBASS);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -252,7 +257,7 @@ RDA5807M::StatusResult RDA5807M::setSeekDirection(SeekDirection seekDirection, b
         setRegister(REG_0x02, 0xFF, SEEKUP);
     }
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -263,7 +268,7 @@ RDA5807M::StatusResult RDA5807M::setSeek(bool seekEnable, bool writeResultToDevi
 {
     setRegister(REG_0x02, Util::boolToInteger(seekEnable), SEEK);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -283,7 +288,7 @@ RDA5807M::StatusResult RDA5807M::setSeekMode(SeekMode seekMode, bool writeResult
         setRegister(REG_0x02, 0x00, SKMODE);
     }
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -294,7 +299,7 @@ RDA5807M::StatusResult RDA5807M::setRDSMode(bool rdsEnable, bool writeResultToDe
 {
     setRegister(REG_0x02, Util::boolToInteger(rdsEnable), RDS_EN);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -306,7 +311,7 @@ RDA5807M::StatusResult RDA5807M::setNewMethod(bool newMethodEnable, bool writeRe
 {
     setRegister(REG_0x02, Util::boolToInteger(newMethodEnable), NEW_METHOD);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -317,7 +322,7 @@ RDA5807M::StatusResult RDA5807M::setSoftReset(bool softResetEnable, bool writeRe
 {
     setRegister(REG_0x02, Util::boolToInteger(softResetEnable), SOFT_RESET);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -328,7 +333,7 @@ RDA5807M::StatusResult RDA5807M::setEnabled(bool enable, bool writeResultToDevic
 {
     setRegister(REG_0x02, Util::boolToInteger(enable), ENABLE);
 
-    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x02, writeResultToDevice);
 }
 
 // TODO this depends on channel spacing!
@@ -339,14 +344,14 @@ RDA5807M::StatusResult RDA5807M::setChannel(uint16_t channel, bool writeResultTo
     uint16_t chan = channel - CHAN_SELECT_BASES[US_EUR_BAND_SELECT];
     setRegister(REG_0x03, chan, CHAN);
 
-    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x03, writeResultToDevice);
 }
 
 RDA5807M::StatusResult RDA5807M::setTune(bool enable, bool writeResultToDevice)
 {
     setRegister(REG_0x03, Util::boolToInteger(enable), TUNE);
 
-    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x03, writeResultToDevice);
 }
 
 RDA5807M::StatusResult RDA5807M::setBand(Band band, bool writeResultToDevice)
@@ -369,7 +374,7 @@ RDA5807M::StatusResult RDA5807M::setBand(Band band, bool writeResultToDevice)
     }
     setRegister(REG_0x03, bandBits, BAND);
 
-    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x03, writeResultToDevice);
 }
 
 RDA5807M::StatusResult RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice)
@@ -393,7 +398,7 @@ RDA5807M::StatusResult RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool 
     }
     setRegister(REG_0x03, spacingBits, SPACE);
 
-    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x03, writeResultToDevice);
 }
 
 RDA5807M::StatusResult RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultToDevice)
@@ -410,14 +415,14 @@ RDA5807M::StatusResult RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultTo
     }
     setRegister(REG_0x04, deemphasisBits, DE);
 
-    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x04, writeResultToDevice);
 }
 
 RDA5807M::StatusResult RDA5807M::setAFCD(bool afcdEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x04, Util::boolToInteger(afcdEnable), AFCD);
 
-    return conditionallyWriteRegister(REG_0x04, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x04, writeResultToDevice);
 }
 
 /**
@@ -428,14 +433,14 @@ RDA5807M::StatusResult RDA5807M::setVolume(uint8_t volume, bool writeResultToDev
 {
     setRegister(REG_0x05, volume, VOLUME);
 
-    return conditionallyWriteRegister(REG_0x05, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x05, writeResultToDevice);
 }
 
 RDA5807M::StatusResult RDA5807M::setSoftMute(bool softMuteEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x04, Util::boolToInteger(softMuteEnable), SOFTMUTE_EN);
 
-    return conditionallyWriteRegister(REG_0x04, writeResultToDevice);
+    return conditionallyWriteRegisterToDevice(REG_0x04, writeResultToDevice);
 }
 
 bool RDA5807M::retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask)
@@ -512,18 +517,41 @@ uint8_t RDA5807M::getRssi()
     RSSI));
 }
 
-void RDA5807M::printStatus()
+std::string RDA5807M::getStatusString()
 {
-    std::printf("Read channel: %u\n", getReadChannel());
-    std::printf("Seek/Tune complete: %s\n", isStcComplete() ? "Complete" : "Not Complete");
-    std::printf("Seek result: %s\n", didSeekFail() ? "Successful" : "Failure");
-    std::printf("RDS Sync'd?: %s\n", isRdsDecoderSynchronized() ? "Synchronized" : "Not synchronized");
-    std::printf("Has Block E been found?: %s\n", hasBlkEBeenFound() ? "Yes" : "No");
-    std::printf("Audio type: %s\n", isStereoEnabled() ? "Stereo" : "Mono");
-    std::printf("Read channel: %u\n", getReadChannel());
-    std::printf("Rssi: 0x%02x\n", getRssi());
-    std::printf("Is this freq a station?: %s\n", isFmTrue() ? "Yes" : "No");
-    std::printf("FM Ready?: %s\n", isFmReady() ? "Yes" : "No");
+    std::string status{""};
+    char buffer[100] = {0};
+    std::sprintf(buffer, "Read channel: %u\n", getReadChannel());
+    status.append(buffer);
+
+    std::sprintf(buffer, "Seek/Tune complete: %s\n", isStcComplete() ? "Complete" : "Not Complete");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Seek result: %s\n", didSeekFail() ? "Successful" : "Failure");
+    status.append(buffer);
+
+    std::sprintf(buffer, "RDS Sync'd?: %s\n", isRdsDecoderSynchronized() ? "Synchronized" : "Not synchronized");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Has Block E been found?: %s\n", hasBlkEBeenFound() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Audio type: %s\n", isStereoEnabled() ? "Stereo" : "Mono");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Read channel: %u\n", getReadChannel());
+    status.append(buffer);
+
+    std::sprintf(buffer, "Rssi: 0x%02x\n", getRssi());
+    status.append(buffer);
+
+    std::sprintf(buffer, "Is this freq a station?: %s\n", isFmTrue() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "FM Ready?: %s\n", isFmReady() ? "Yes" : "No");
+    status.append(buffer);
+
+    return status;
 }
 
 /**
@@ -532,7 +560,7 @@ void RDA5807M::printStatus()
  * Returns the result of writeRegisterToDevice(regToWrite) if shouldWrite is true, and returns
  * SUCCESS if shouldWrite is false.
  */
-RDA5807M::StatusResult RDA5807M::conditionallyWriteRegister(Register regToWrite, bool shouldWrite)
+RDA5807M::StatusResult RDA5807M::conditionallyWriteRegisterToDevice(Register regToWrite, bool shouldWrite)
 {
     if (shouldWrite)
     {

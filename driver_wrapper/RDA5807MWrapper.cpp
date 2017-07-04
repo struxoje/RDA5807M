@@ -50,13 +50,6 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setVolume(int vol)
     return radio.setVolume(static_cast<uint8_t>(vol));
 }
 
-RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::printStatus(int UNUSED)
-{
-    radio.readDeviceRegistersAndStoreLocally();
-    radio.printStatus();
-    return RadioResult<RDA5807M::StatusResult> { RDA5807M::StatusResult::SUCCESS };
-}
-
 /*
  * Mute enabled if muteEnable=1, disable mute if muteEnable=0
  */
@@ -73,4 +66,54 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setBassBoost(int bassBoostE
     return radio.setBassBoost(Util::boolFromInteger(bassBoostEnable));
 }
 
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setRadioEnableState(int radioEnable)
+{
+    return radio.setEnabled(Util::boolFromInteger(radioEnable));
+}
+
+RadioResult<std::string> RDA5807MWrapper::getStatusString(int UNUSED)
+{
+    radio.readDeviceRegistersAndStoreLocally();
+    return radio.getStatusString();
+}
+
+RadioResult<std::string> RDA5807MWrapper::getRegisterMapString(int UNUSED)
+{
+    return radio.getRegisterMap();
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setHighImpedanceOutput(int highImpedanceOutputEnable)
+{
+    return radio.setHighImpedanceOutput(Util::boolFromInteger(highImpedanceOutputEnable));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setStereo(int stereoEnable)
+{
+    return radio.setStereo(Util::boolFromInteger(stereoEnable));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSeek(int seekEnable)
+{
+    return radio.setSeek(Util::boolFromInteger(seekEnable));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setRDS(int rdsEnable)
+{
+    return radio.setRDSMode(Util::boolFromInteger(rdsEnable));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setNewMethod(int newMethodEnable)
+{
+    return radio.setNewMethod(Util::boolFromInteger(newMethodEnable));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSoftReset(int softResetEnable)
+{
+    return radio.setSoftReset(Util::boolFromInteger(softResetEnable));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSoftMute(int softMuteEnable)
+{
+    return radio.setSoftMute(Util::boolFromInteger(softMuteEnable));
+}
 

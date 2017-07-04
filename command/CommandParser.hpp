@@ -38,10 +38,11 @@ private:
     /////////////////////////////
     // Private class Constants //
     /////////////////////////////
-    static const Command<RDA5807M::StatusResult> statusResultCommands[];
-    static const Command<std::string> stringResultCommands[];
-    static const Command<uint32_t> uInt32ResultCommands[];
+    static const Command<RDA5807M::StatusResult> STATUS_RESULT_COMMANDS[];
+    static const Command<std::string> STRING_RESULT_COMMANDS[];
+    static const Command<uint32_t> UINT32_RESULT_COMMANDS[];
     static const std::regex CMD_REGEX;
+    static const int UNUSED_PARAM_VALUE = -1;
 
     //////////////////////////////
     // Private member variables //

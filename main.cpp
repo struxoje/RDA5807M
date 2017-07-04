@@ -43,7 +43,6 @@ int main()
         std::cout << "Enter Command: " << std::endl;
         std::string line = "";
         std::getline(std::cin, line);
-        std::cout << "Entered: " << line << std::endl;
         std::string result = parser.execute(line);
         std::cout << "Exec Result: " << result << std::endl;
         std::cout << "\n\n" << std::endl;
