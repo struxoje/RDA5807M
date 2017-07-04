@@ -117,3 +117,7 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSoftMute(int softMuteEna
     return radio.setSoftMute(Util::boolFromInteger(softMuteEnable));
 }
 
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setTune(int tuneEnable)
+{
+    return radio.setTune(Util::boolFromInteger(tuneEnable));
+}

@@ -36,6 +36,8 @@ public:
     RadioResult<RDA5807M::StatusResult> setNewMethod(int newMethodEnable);
     RadioResult<RDA5807M::StatusResult> setSoftReset(int softResetEnable);
     RadioResult<RDA5807M::StatusResult> setSoftMute(int softMuteEnable);
+    RadioResult<RDA5807M::StatusResult> setTune(int tuneEnable);
+
 
     RadioResult<std::string> getStatusString(int UNUSED);
     RadioResult<std::string> getRegisterMapString(int UNUSED);

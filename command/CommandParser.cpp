@@ -33,6 +33,7 @@ const Command<RDA5807M::StatusResult> CommandParser::STATUS_RESULT_COMMANDS[] =
     Command<RDA5807M::StatusResult> { "NEWMETHOD", &RDA5807MWrapper::setNewMethod },
     Command<RDA5807M::StatusResult> { "SOFTRESET", &RDA5807MWrapper::setSoftReset },
     Command<RDA5807M::StatusResult> { "SOFTMUTE", &RDA5807MWrapper::setSoftMute },
+    Command<RDA5807M::StatusResult> { "TUNE", &RDA5807MWrapper::setTune },
 };
 
 const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
