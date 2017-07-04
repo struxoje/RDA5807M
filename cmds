@@ -1,5 +1,0 @@
-Create ap:
-sudo create_ap --ieee80211n --ht_capab '[HT40+]' wlp2s0 wlp3s0 galileo bensherman
-
-Delete device:
-iw dev ap0 del

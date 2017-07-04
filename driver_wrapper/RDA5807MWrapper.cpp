@@ -32,9 +32,8 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setFrequency(int freq)
         return RadioResult<RDA5807M::StatusResult> { RDA5807M::StatusResult::ABOVE_MAX };
     }
 
-    radio.setChannel(static_cast<uint16_t>(freq));
-    radio.setTune(true);
-    return RadioResult<RDA5807M::StatusResult> { RDA5807M::StatusResult::SUCCESS };;
+    radio.setChannel(static_cast<uint16_t>(freq), false);
+    return radio.setTune(true);
 }
 
 /**
@@ -48,9 +47,7 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setVolume(int vol)
         return RadioResult<RDA5807M::StatusResult> { RDA5807M::StatusResult::ABOVE_MAX };
     }
 
-    radio.setVolume(static_cast<uint8_t>(vol));
-
-    return RadioResult<RDA5807M::StatusResult> { RDA5807M::StatusResult::SUCCESS };
+    return radio.setVolume(static_cast<uint8_t>(vol));
 }
 
 RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::printStatus(int UNUSED)
@@ -65,8 +62,7 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::printStatus(int UNUSED)
  */
 RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setMute(int muteEnable)
 {
-    radio.setMute(Util::boolFromInteger(muteEnable));
-    return RadioResult<RDA5807M::StatusResult> { RDA5807M::StatusResult::SUCCESS };
+    return radio.setMute(Util::boolFromInteger(muteEnable));
 }
 
 /**
@@ -74,8 +70,7 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setMute(int muteEnable)
  */
 RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setBassBoost(int bassBoostEnable)
 {
-    radio.setBassBoost(Util::boolFromInteger(bassBoostEnable));
-    return RadioResult<RDA5807M::StatusResult> { RDA5807M::StatusResult::SUCCESS };
+    return radio.setBassBoost(Util::boolFromInteger(bassBoostEnable));
 }
 
 

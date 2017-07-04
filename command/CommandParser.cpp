@@ -48,7 +48,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
         if (cmd.compare(statusResultCmd.getCommand()) == 0)
         {
             std::cout << "Executing: " << cmd << "; Param: " << param << std::endl;
-            return RDA5807M::resultToString(statusResultCmd.exec(param, radioWrapper).getResult());
+            return RDA5807M::statusResultToString(statusResultCmd.exec(param, radioWrapper).getResult());
         }
     }
     return "";

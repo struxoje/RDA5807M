@@ -47,7 +47,6 @@ public:
 
     enum SeekDirection {SEEK_UP, SEEK_DOWN};
     enum SeekMode {WRAP_AT_LIMIT, STOP_AT_LIMIT};
-    enum I2c_Result {SUCCESS, FAILED};
     enum Band {US_EUR, JAP, WORLD_WIDE, EAST_EUROPE};
     enum ChannelSpacing {ONE_HUND_KHZ, TWO_HUND_KHZ, FIFTY_KHZ, TWENTY_FIVE_KHZ};
     enum DeEmphasis {SEVENTY_FIVE_US, FIFTY_US};
@@ -67,9 +66,9 @@ public:
     // to the device
     void setRegister(Register regNum, uint16_t value, uint16_t mask = 0xFF);
 
-    I2c_Result writeRegisterToDevice(Register reg);
+    StatusResult writeRegisterToDevice(Register reg);
 
-    I2c_Result writeAllRegistersToDevice();
+    StatusResult writeAllRegistersToDevice();
 
     void readDeviceRegistersAndStoreLocally();
 
@@ -78,43 +77,43 @@ public:
     void printRegisterMap();
 
     // FUNCTIONS USED TO ENABLE/DISABLE RADIO MODES
-    void setMute(bool muteEnable, bool writeResultToDevice = true);
+    StatusResult setMute(bool muteEnable, bool writeResultToDevice = true);
 
-    void setHighImpedanceOutput(bool highImpedanceEnable, bool writeResultToDevice = true);
+    StatusResult setHighImpedanceOutput(bool highImpedanceEnable, bool writeResultToDevice = true);
 
-    void setStereo(bool stereoEnable, bool writeResultToDevice = true);
+    StatusResult setStereo(bool stereoEnable, bool writeResultToDevice = true);
 
-    void setBassBoost(bool bassBoostEnable, bool writeResultToDevice = true);
+    StatusResult setBassBoost(bool bassBoostEnable, bool writeResultToDevice = true);
 
-    void setSeekDirection(SeekDirection seekDirection, bool writeResultToDevice = true);
+    StatusResult setSeekDirection(SeekDirection seekDirection, bool writeResultToDevice = true);
 
-    void setSeek(bool seekEnable, bool writeResultToDevice = true);
+    StatusResult setSeek(bool seekEnable, bool writeResultToDevice = true);
 
-    void setSeekMode(SeekMode seekMode, bool writeResultToDevice = true);
+    StatusResult setSeekMode(SeekMode seekMode, bool writeResultToDevice = true);
 
-    void setRDSMode(bool rdsEnable, bool writeResultToDevice = true);
+    StatusResult setRDSMode(bool rdsEnable, bool writeResultToDevice = true);
 
-    void setNewMethod(bool newMethodEnable, bool writeResultToDevice = true);
+    StatusResult setNewMethod(bool newMethodEnable, bool writeResultToDevice = true);
 
-    void setSoftReset(bool softResetEnable, bool writeResultToDevice = true);
+    StatusResult setSoftReset(bool softResetEnable, bool writeResultToDevice = true);
 
-    void setEnabled(bool enable, bool writeResultToDevice = true);
+    StatusResult setEnabled(bool enable, bool writeResultToDevice = true);
 
-    void setChannel(uint16_t channel, bool writeResultToDevice = true);
+    StatusResult setChannel(uint16_t channel, bool writeResultToDevice = true);
 
-    void setTune(bool enable, bool writeResultToDevice = true);
+    StatusResult setTune(bool enable, bool writeResultToDevice = true);
 
-    void setBand(Band band, bool writeResultToDevice = true);
+    StatusResult setBand(Band band, bool writeResultToDevice = true);
 
-    void setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice = true);
+    StatusResult setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice = true);
 
-    void setVolume(uint8_t volume, bool writeResultToDevice = true);
+    StatusResult setVolume(uint8_t volume, bool writeResultToDevice = true);
 
-    void setDeEmphasis(DeEmphasis de, bool writeResultToDevice = true);
+    StatusResult setDeEmphasis(DeEmphasis de, bool writeResultToDevice = true);
 
-    void setAFCD(bool afcdEnable, bool writeResultToDevice = true);
+    StatusResult setAFCD(bool afcdEnable, bool writeResultToDevice = true);
 
-    void setSoftMute(bool softMuteEnable, bool writeResultToDevice = true);
+    StatusResult setSoftMute(bool softMuteEnable, bool writeResultToDevice = true);
 
     bool retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask);
 
@@ -140,7 +139,7 @@ public:
 
     void printStatus();
 
-    static std::string resultToString(StatusResult toConvert);
+    static std::string statusResultToString(StatusResult toConvert);
 
 private:
     /////////////////////////////
@@ -203,11 +202,13 @@ private:
     static const uint16_t CHAN_SELECT_BASES[];
 
     // String values for the StatusResult enum
-    static const std::string RESULT_TO_STRING[];
+    static const std::string STATUSRESULT_TO_STRING[];
+
     /////////////////////////////////
     // Private interface functions //
     /////////////////////////////////
-    bool setI2cAddress(uint8_t addr);
+    StatusResult setI2cAddress(uint8_t addr);
+    StatusResult conditionallyWriteRegister(Register regToWrite, bool shouldWrite);
     void init();
 
     //////////////////////////////

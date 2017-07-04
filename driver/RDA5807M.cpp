@@ -35,7 +35,7 @@ const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] = {
         /* Reg 0x0F */0x0000 };
 
 const uint16_t RDA5807M::CHAN_SELECT_BASES[] = {870, 870, 760, 650};
-const std::string RDA5807M::RESULT_TO_STRING[] = { "SUCCESS", "ABOVE_MAX", "BELOW_MIN", "GENERAL_FAILURE", "I2C_FAILURE" };
+const std::string RDA5807M::STATUSRESULT_TO_STRING[] = { "SUCCESS", "ABOVE_MAX", "BELOW_MIN", "GENERAL_FAILURE", "I2C_FAILURE" };
 
 
 RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
@@ -44,9 +44,9 @@ RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
     std::memcpy(registers, REGISTER_MAP_DEFAULT_STATE, REGISTER_MAP_SIZE_BYTES);
 
     // Set the i2c addr
-    bool result = setI2cAddress(RANDOM_ACCESS_I2C_MODE_ADDR);
+    StatusResult result = setI2cAddress(RANDOM_ACCESS_I2C_MODE_ADDR);
 
-    std::cout << "I2C address set result: " << (result == true ? "OK!" : "Error!") << std::endl;
+    std::cout << "I2C address set result: " << (result == StatusResult::SUCCESS ? "OK!" : "Error!") << std::endl;
 
     init();
 }
@@ -54,9 +54,9 @@ RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
 /**
  * Returns the string value of the result parameter
  */
-std::string RDA5807M::resultToString(StatusResult toConvert)
+std::string RDA5807M::statusResultToString(StatusResult toConvert)
 {
-    return RESULT_TO_STRING[static_cast<unsigned int>(toConvert)];
+    return STATUSRESULT_TO_STRING[static_cast<unsigned int>(toConvert)];
 }
 
 void RDA5807M::init()
@@ -112,19 +112,19 @@ void RDA5807M::setRegister(Register regNum, uint16_t value, uint16_t mask)
     registers[regNum] = regTemp;
 }
 
-bool RDA5807M::setI2cAddress(uint8_t addr)
+RDA5807M::StatusResult RDA5807M::setI2cAddress(uint8_t addr)
 {
     if (mraa::Result::SUCCESS != i2cInterface.address(addr))
     {
-        return false;
+        return StatusResult::I2C_FAILURE;
     }
     else
     {
-        return true;
+        return StatusResult::SUCCESS;
     }
 }
 
-RDA5807M::I2c_Result RDA5807M::writeRegisterToDevice(Register reg)
+RDA5807M::StatusResult RDA5807M::writeRegisterToDevice(Register reg)
 {
     uint8_t dataToWrite[3] = { static_cast<uint8_t>(reg), static_cast<uint8_t>(registers[reg] >> 8),
             static_cast<uint8_t>(registers[reg]) };
@@ -138,24 +138,24 @@ RDA5807M::I2c_Result RDA5807M::writeRegisterToDevice(Register reg)
     if (result == mraa::Result::SUCCESS)
     {
 //        std::cout << "\tWrite successful" << std::endl;
-        return I2c_Result::SUCCESS;
+        return StatusResult::SUCCESS;
     }
     else
     {
         std::cout << "\tWrite failed" << std::endl;
-        return I2c_Result::FAILED;
+        return StatusResult::I2C_FAILURE;
     }
 }
 
-RDA5807M::I2c_Result RDA5807M::writeAllRegistersToDevice()
+RDA5807M::StatusResult RDA5807M::writeAllRegistersToDevice()
 {
-    I2c_Result res = SUCCESS;
+    StatusResult res = StatusResult::SUCCESS;
 
     for (uint8_t regIdx = WRITE_REGISTER_BASE_IDX; regIdx <= WRITE_REGISTER_MAX_IDX; ++regIdx)
     {
-        if (I2c_Result::FAILED == writeRegisterToDevice(static_cast<Register>(regIdx)))
+        if (StatusResult::I2C_FAILURE == writeRegisterToDevice(static_cast<Register>(regIdx)))
         {
-            res = FAILED;
+            res = StatusResult::I2C_FAILURE;
         }
     }
     return res;
@@ -197,63 +197,51 @@ void RDA5807M::printRegisterMap()
 /**
  * Enables mute if muteEnable is true, disables mute if muteEnable is false
  */
-void RDA5807M::setMute(bool muteEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setMute(bool muteEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(!muteEnable), DMUTE);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
  * Enables high impedance output mode if highImpedanceEnable is true,
  * enables normal operation if highImpedanceEmable is false.
  */
-void RDA5807M::setHighImpedanceOutput(bool highImpedanceEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setHighImpedanceOutput(bool highImpedanceEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(!highImpedanceEnable), DHIZ);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
  * Enables stereo mode if stereoEnable is true, forces mono mode if
  * stereoEnable is false.
  */
-void RDA5807M::setStereo(bool stereoEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setStereo(bool stereoEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(!stereoEnable), DMONO);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
  * Enables bass bost if bassBostEnabe is true, disables bass boost if
  * bassBostEnable is false
  */
-void RDA5807M::setBassBoost(bool bassBoostEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setBassBoost(bool bassBoostEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(bassBoostEnable), DBASS);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
  * Sets the seek direction to up if seekDirection is SEEK_UP,
  * and sets the seek direction to down if seekDirection is SEEK_DOWN.
  */
-void RDA5807M::setSeekDirection(SeekDirection seekDirection, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setSeekDirection(SeekDirection seekDirection, bool writeResultToDevice)
 {
     if (seekDirection == SeekDirection::SEEK_DOWN)
     {
@@ -264,24 +252,18 @@ void RDA5807M::setSeekDirection(SeekDirection seekDirection, bool writeResultToD
         setRegister(REG_0x02, 0xFF, SEEKUP);
     }
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
  * Enables seek mode if seekEnable is true, and disables seek mode if seekEnable
  * is false.
  */
-void RDA5807M::setSeek(bool seekEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setSeek(bool seekEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(seekEnable), SEEK);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -290,7 +272,7 @@ void RDA5807M::setSeek(bool seekEnable, bool writeResultToDevice)
  * If seekMode is STOP_AT_LIMIT, when the seek operation reaches a band limit,
  * seeking will stop.
  */
-void RDA5807M::setSeekMode(SeekMode seekMode, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setSeekMode(SeekMode seekMode, bool writeResultToDevice)
 {
     if (seekMode == SeekMode::STOP_AT_LIMIT)
     {
@@ -301,24 +283,18 @@ void RDA5807M::setSeekMode(SeekMode seekMode, bool writeResultToDevice)
         setRegister(REG_0x02, 0x00, SKMODE);
     }
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
  * Enables RDS/RBDS if rdsEnables is true. Disables RDS/RBDS if rdsEnable
  * is false.
  */
-void RDA5807M::setRDSMode(bool rdsEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setRDSMode(bool rdsEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(rdsEnable), RDS_EN);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
@@ -326,69 +302,54 @@ void RDA5807M::setRDSMode(bool rdsEnable, bool writeResultToDevice)
  * by about 1dB." If newMethodEnable is true, the new method is enabled, and if
  * newMethodEnabled is false, the new method is disabled.
  */
-void RDA5807M::setNewMethod(bool newMethodEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setNewMethod(bool newMethodEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(newMethodEnable), NEW_METHOD);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
  * Puts the radio in soft reset mode if softResetEnable is true,
  * removes the radio from soft reset mode if softResetEnable is false.
  */
-void RDA5807M::setSoftReset(bool softResetEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setSoftReset(bool softResetEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(softResetEnable), SOFT_RESET);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 /**
  * Enables powerup of the radio if enable is true, turns radio power off
  * if enable is false.
  */
-void RDA5807M::setEnabled(bool enable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setEnabled(bool enable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(enable), ENABLE);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x02);
-    }
+    return conditionallyWriteRegister(REG_0x02, writeResultToDevice);
 }
 
 // TODO this depends on channel spacing!
 // We assume 100KHz spacing and US band currently, and the channel
 // must be in terms of 10f - that is, 985 for 98.5MHz, for example
-void RDA5807M::setChannel(uint16_t channel, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setChannel(uint16_t channel, bool writeResultToDevice)
 {
     uint16_t chan = channel - CHAN_SELECT_BASES[US_EUR_BAND_SELECT];
     setRegister(REG_0x03, chan, CHAN);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x03);
-    }
+    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
 }
 
-void RDA5807M::setTune(bool enable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setTune(bool enable, bool writeResultToDevice)
 {
     setRegister(REG_0x03, Util::boolToInteger(enable), TUNE);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x03);
-    }
+    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
 }
 
-void RDA5807M::setBand(Band band, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setBand(Band band, bool writeResultToDevice)
 {
     uint8_t bandBits = US_EUR_BAND_SELECT;
     switch (band)
@@ -408,13 +369,10 @@ void RDA5807M::setBand(Band band, bool writeResultToDevice)
     }
     setRegister(REG_0x03, bandBits, BAND);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x03);
-    }
+    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
 }
 
-void RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice)
 {
     uint8_t spacingBits = CHANNEL_SPACE_100KHZ;
 
@@ -435,13 +393,10 @@ void RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevic
     }
     setRegister(REG_0x03, spacingBits, SPACE);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x03);
-    }
+    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
 }
 
-void RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultToDevice)
 {
     uint8_t deemphasisBits = DEEMP_75_US;
     switch (de)
@@ -455,44 +410,32 @@ void RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultToDevice)
     }
     setRegister(REG_0x04, deemphasisBits, DE);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x03);
-    }
+    return conditionallyWriteRegister(REG_0x03, writeResultToDevice);
 }
 
-void RDA5807M::setAFCD(bool afcdEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setAFCD(bool afcdEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x04, Util::boolToInteger(afcdEnable), AFCD);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x04);
-    }
+    return conditionallyWriteRegister(REG_0x04, writeResultToDevice);
 }
 
 /**
  * Sets the radio volume. volume = 1111 is maximum, and volume = 0
  * is muted. The volume scale is "logarithmic" as per the manual.
  */
-void RDA5807M::setVolume(uint8_t volume, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setVolume(uint8_t volume, bool writeResultToDevice)
 {
     setRegister(REG_0x05, volume, VOLUME);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x05);
-    }
+    return conditionallyWriteRegister(REG_0x05, writeResultToDevice);
 }
 
-void RDA5807M::setSoftMute(bool softMuteEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setSoftMute(bool softMuteEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x04, Util::boolToInteger(softMuteEnable), SOFTMUTE_EN);
 
-    if (writeResultToDevice)
-    {
-        writeRegisterToDevice(REG_0x04);
-    }
+    return conditionallyWriteRegister(REG_0x04, writeResultToDevice);
 }
 
 bool RDA5807M::retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask)
@@ -582,3 +525,22 @@ void RDA5807M::printStatus()
     std::printf("Is this freq a station?: %s\n", isFmTrue() ? "Yes" : "No");
     std::printf("FM Ready?: %s\n", isFmReady() ? "Yes" : "No");
 }
+
+/**
+ * A wrapper for writeRegisterToDevice(). Since many functions have the same if(writeResultToDevice) do write;
+ * else return SUCCESS; statement, this function is intended to help slim code duplication.
+ * Returns the result of writeRegisterToDevice(regToWrite) if shouldWrite is true, and returns
+ * SUCCESS if shouldWrite is false.
+ */
+RDA5807M::StatusResult RDA5807M::conditionallyWriteRegister(Register regToWrite, bool shouldWrite)
+{
+    if (shouldWrite)
+    {
+        return writeRegisterToDevice(regToWrite);
+    }
+    else
+    {
+        return StatusResult::SUCCESS;
+    }
+}
+
