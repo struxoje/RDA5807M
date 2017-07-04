@@ -34,6 +34,8 @@ const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] = {
         /* Reg 0x0E */0x0000,
         /* Reg 0x0F */0x0000 };
 
+const uint16_t RDA5807M::CHAN_SELECT_BASES[] = {870, 870, 760, 650};
+
 RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
 {
     // Reset the local register map
@@ -50,14 +52,16 @@ RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
 void RDA5807M::init()
 {
     std::memcpy(registers, REGISTER_MAP_DEFAULT_STATE, REGISTER_MAP_SIZE_BYTES);
-    setMute(false);
-    setHighImpedanceOutput(false);
-    setRDSMode(true);
-    setVolume(0x00);
-    setChannelSpacing(RDA5807M::ChannelSpacing::ONE_HUND_KHZ);
-    setBand(RDA5807M::Band::US_EUR);
-    setTune(true);
-    setEnabled(true);
+    setMute(true, false);
+    setHighImpedanceOutput(false, false);
+    setRDSMode(true, false);
+    setSoftMute(false, false);
+    setNewMethod(true, false); // KEEP ME ENABLED! Using new method offers a drastic performance reception improvement
+    setVolume(0x00, false);
+    setChannelSpacing(RDA5807M::ChannelSpacing::ONE_HUND_KHZ, false);
+    setBand(RDA5807M::Band::US_EUR, false);
+    setTune(true, false);
+    setEnabled(true, false);
     writeAllRegistersToDevice();
 }
 
@@ -355,7 +359,7 @@ void RDA5807M::setEnabled(bool enable, bool writeResultToDevice)
 // must be in terms of 10f - that is, 985 for 98.5MHz, for example
 void RDA5807M::setChannel(uint16_t channel, bool writeResultToDevice)
 {
-    uint16_t chan = channel - 870;
+    uint16_t chan = channel - CHAN_SELECT_BASES[US_EUR_BAND_SELECT];
     setRegister(REG_0x03, chan, CHAN);
 
     if (writeResultToDevice)
@@ -535,7 +539,7 @@ uint16_t RDA5807M::getReadChannel()
 
     uint16_t readChannel = Util::valueFromReg(registers[REG_0x0A], READCHAN);
 
-    return (readChannel + 870);
+    return (readChannel + CHAN_SELECT_BASES[US_EUR_BAND_SELECT]);
 }
 
 bool RDA5807M::isFmTrue()

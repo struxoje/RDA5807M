@@ -36,7 +36,8 @@ public:
     RadioResult<StatusResult> setFrequency(int freq);
     RadioResult<StatusResult> setVolume(int vol);
     RadioResult<StatusResult> printStatus(int UNUSED);
-    RadioResult<StatusResult> setMute(int mute);
+    RadioResult<StatusResult> setMute(int muteEnable);
+    RadioResult<StatusResult> setBassBoost(int bassBoostEnable);
 
 private:
     ////////////////////////////////////

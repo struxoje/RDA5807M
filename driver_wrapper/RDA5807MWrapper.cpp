@@ -54,7 +54,7 @@ RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::setFrequency(int fre
  */
 RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::setVolume(int vol)
 {
-    if (vol > 15)
+    if (vol > RDA5807M::MAX_VOLUME)
     {
         return RadioResult<StatusResult> { StatusResult::ABOVE_MAX };
     }
@@ -72,11 +72,21 @@ RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::printStatus(int UNUS
 }
 
 /*
- * Mute if mute=1, disable mute if mute=0
+ * Mute enabled if muteEnable=1, disable mute if muteEnable=0
  */
-RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::setMute(int mute)
+RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::setMute(int muteEnable)
 {
-    radio.setMute(Util::boolFromInteger(mute));
+    radio.setMute(Util::boolFromInteger(muteEnable));
     return RadioResult<StatusResult> { StatusResult::SUCCESS };
 }
+
+/**
+ * Bass boost enabled if bassBoostEnable=1, disable bass boost if bassBoostEnable=0
+ */
+RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::setBassBoost(int bassBoostEnable)
+{
+    radio.setBassBoost(Util::boolFromInteger(bassBoostEnable));
+    return RadioResult<StatusResult> { StatusResult::SUCCESS };
+}
+
 

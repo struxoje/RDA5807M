@@ -39,12 +39,6 @@ int main()
     RDA5807MWrapper wrapper { radio };
     CommandParser parser { wrapper };
 
-    radio.setChannel(949);
-    radio.setVolume(0x00);
-    radio.setTune(true);
-    radio.setMute(false);
-    radio.writeAllRegistersToDevice();
-
     while (true) {
         std::cout << "Enter Command: " << std::endl;
         std::string line = "";

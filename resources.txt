@@ -1,4 +1,4 @@
 - Guide to pointers to members
 	https://isocpp.org/wiki/faq/pointers-to-members
 
-	
+- Use the "NewMethod" specified in the manual. It offers a drastic performance improvement w/ regards to reception and loudness

@@ -24,7 +24,8 @@ const Command<RDA5807MWrapper::StatusResult> CommandParser::statusResultCommands
         Command<RDA5807MWrapper::StatusResult> { "FREQ", &RDA5807MWrapper::setFrequency },
         Command<RDA5807MWrapper::StatusResult> { "VOL", &RDA5807MWrapper::setVolume },
         Command<RDA5807MWrapper::StatusResult> { "STATUS", &RDA5807MWrapper::printStatus },
-        Command<RDA5807MWrapper::StatusResult> { "MUTE", &RDA5807MWrapper::setMute }
+        Command<RDA5807MWrapper::StatusResult> { "MUTE", &RDA5807MWrapper::setMute },
+        Command<RDA5807MWrapper::StatusResult> { "BASSBOOST", &RDA5807MWrapper::setBassBoost }
     };
 const std::regex CommandParser::CMD_REGEX { "^([A-Z]+){1}=([0-9]+)"};
 

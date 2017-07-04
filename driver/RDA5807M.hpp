@@ -18,6 +18,8 @@ public:
     /////////////////////
     // Class Constants //
     /////////////////////
+    // Limits
+    static const uint8_t MAX_VOLUME = 0xFF;
 
     //////////////////////
     // Enum Definitions //
@@ -185,6 +187,12 @@ private:
     // Deemphasis
     static const uint8_t DEEMP_75_US = 0x00;
     static const uint8_t DEEMP_50_US = 0x01;
+
+    // Channel select base freq
+    // The indices to this array are band selection IDs 0-3
+    // The values of this array represent frequencies in MHz,
+    // where 870 = 87.0 MHz
+    static const uint16_t CHAN_SELECT_BASES[];
 
     /////////////////////////////////
     // Private interface functions //
