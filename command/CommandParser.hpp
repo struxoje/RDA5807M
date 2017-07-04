@@ -38,7 +38,7 @@ private:
     /////////////////////////////
     // Private class Constants //
     /////////////////////////////
-    static const Command<RDA5807MWrapper::StatusResult> statusResultCommands[];
+    static const Command<RDA5807M::StatusResult> statusResultCommands[];
     static const Command<std::string> stringResultCommands[];
     static const Command<uint32_t> uInt32ResultCommands[];
     static const std::regex CMD_REGEX;

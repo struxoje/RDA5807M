@@ -20,6 +20,7 @@ public:
     /////////////////////
     // Limits
     static const uint8_t MAX_VOLUME = 0xFF;
+    static const uint8_t RSSI_MAX = 0x7F;
 
     //////////////////////
     // Enum Definitions //
@@ -50,6 +51,11 @@ public:
     enum Band {US_EUR, JAP, WORLD_WIDE, EAST_EUROPE};
     enum ChannelSpacing {ONE_HUND_KHZ, TWO_HUND_KHZ, FIFTY_KHZ, TWENTY_FIVE_KHZ};
     enum DeEmphasis {SEVENTY_FIVE_US, FIFTY_US};
+
+    enum class StatusResult
+    {
+        SUCCESS = 0, ABOVE_MAX = 1, BELOW_MIN = 2, GENERAL_FAILURE = 3, I2C_FAILURE = 4
+    };
 
     ////////////////////////////////
     // Public interface functions //
@@ -134,6 +140,8 @@ public:
 
     void printStatus();
 
+    static std::string resultToString(StatusResult toConvert);
+
 private:
     /////////////////////////////
     // Private class Constants //
@@ -194,6 +202,8 @@ private:
     // where 870 = 87.0 MHz
     static const uint16_t CHAN_SELECT_BASES[];
 
+    // String values for the StatusResult enum
+    static const std::string RESULT_TO_STRING[];
     /////////////////////////////////
     // Private interface functions //
     /////////////////////////////////

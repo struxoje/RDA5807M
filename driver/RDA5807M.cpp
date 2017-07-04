@@ -35,6 +35,8 @@ const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] = {
         /* Reg 0x0F */0x0000 };
 
 const uint16_t RDA5807M::CHAN_SELECT_BASES[] = {870, 870, 760, 650};
+const std::string RDA5807M::RESULT_TO_STRING[] = { "SUCCESS", "ABOVE_MAX", "BELOW_MIN", "GENERAL_FAILURE", "I2C_FAILURE" };
+
 
 RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
 {
@@ -47,6 +49,14 @@ RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
     std::cout << "I2C address set result: " << (result == true ? "OK!" : "Error!") << std::endl;
 
     init();
+}
+
+/**
+ * Returns the string value of the result parameter
+ */
+std::string RDA5807M::resultToString(StatusResult toConvert)
+{
+    return RESULT_TO_STRING[static_cast<unsigned int>(toConvert)];
 }
 
 void RDA5807M::init()
