@@ -9,9 +9,9 @@
 #include <string>
 
 // Project includes
-#include "RDA5807MWrapper.hpp"
-#include "RDA5807M.hpp"
 #include "RadioResult.hpp"
+#include "RDA5807M.hpp"
+#include "RDA5807MWrapper.hpp"
 #include "Util.hpp"
 
 // Static Initialization
@@ -34,18 +34,17 @@ std::string RDA5807MWrapper::resultToString(StatusResult toConvert)
 RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::setFrequency(int freq)
 {
 	// Frequency ranges assume US/Europe band selection
-	if (freq < 87)
+	if (freq < 870)
 	{
 		return RadioResult<StatusResult>{StatusResult::BELOW_MIN};
 	}
-	else if (freq > 108)
+	else if (freq > 1080)
 	{
 		return RadioResult<StatusResult>{StatusResult::ABOVE_MAX};
 	}
 
-	radio.setChannel(static_cast<uint16_t>(freq), false);
+	radio.setChannel(static_cast<uint16_t>(freq));
 	radio.setTune(true);
-
 	return RadioResult<StatusResult>{StatusResult::SUCCESS};
 ;
 }
@@ -78,7 +77,7 @@ RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::printStatus(int UNUS
  */
 RadioResult<RDA5807MWrapper::StatusResult> RDA5807MWrapper::setMute(int mute)
 {
-	radio.setMute(Util::boolFromInt(mute));
+	radio.setMute(Util::boolFromInteger(mute));
 	return RadioResult<StatusResult>{StatusResult::SUCCESS};
 }
 

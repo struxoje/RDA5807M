@@ -49,7 +49,7 @@ uint16_t Util::boolToInteger(bool boolean)
 /**
  * Return true if val > 0, false otherwise
  */
-bool Util::boolFromInt(int val)
+bool Util::boolFromInteger(int val)
 {
 	if (val > 0)
 	{

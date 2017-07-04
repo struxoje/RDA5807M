@@ -12,11 +12,11 @@
 #include <utility>
 
 // Project includes
-#include "CommandParser.hpp"
 #include "Command.hpp"
+#include "CommandParser.hpp"
+#include "RadioResult.hpp"
 #include "RDA5807M.hpp"
 #include "RDA5807MWrapper.hpp"
-#include "RadioResult.hpp"
 
 // Static initialization
 const Command<RDA5807MWrapper::StatusResult> CommandParser::statusResultCommands[] =
@@ -24,6 +24,7 @@ const Command<RDA5807MWrapper::StatusResult> CommandParser::statusResultCommands
 		Command<RDA5807MWrapper::StatusResult>{"FREQ", &RDA5807MWrapper::setFrequency},
 		Command<RDA5807MWrapper::StatusResult>{"VOL", &RDA5807MWrapper::setVolume},
 		Command<RDA5807MWrapper::StatusResult>{"STATUS", &RDA5807MWrapper::printStatus},
+		Command<RDA5807MWrapper::StatusResult>{"MUTE", &RDA5807MWrapper::setMute}
 	};
 const std::regex CommandParser::CMD_REGEX{"^([A-Z]+){1}=([0-9]+)"};
 
@@ -45,6 +46,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
 		Command<RDA5807MWrapper::StatusResult> statusResultCmd = statusResultCommands[idx];
 		if (cmd.compare(statusResultCmd.getCommand()) == 0)
 		{
+			std::cout << "Executing: " << cmd << "; Param: " << param << std::endl;
 			return RDA5807MWrapper::resultToString(statusResultCmd.exec(param, radioWrapper).getResult());
 		}
 	}

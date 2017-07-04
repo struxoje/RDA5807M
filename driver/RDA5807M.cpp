@@ -9,10 +9,10 @@
 #include <iostream>
 
 // Project includes
+#include "mraa.hpp"
 #include "RDA5807M.hpp"
 #include "RDA5807MRegDefines.hpp"
 #include "Util.hpp"
-#include "mraa.hpp"
 
 // Static variable initialization
 const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] =

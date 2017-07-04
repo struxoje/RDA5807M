@@ -12,8 +12,8 @@
 #include <cstring>
 
 // Project includes
-#include "RDA5807M.hpp"
 #include "RadioResult.hpp"
+#include "RDA5807M.hpp"
 #include "RDA5807MWrapper.hpp"
 
 template<typename T>

@@ -14,9 +14,9 @@
 #include <string>
 
 // Project includes
-#include "RDA5807M.hpp"
 #include "Command.hpp"
 #include "RadioResult.hpp"
+#include "RDA5807M.hpp"
 
 class CommandParser
 {

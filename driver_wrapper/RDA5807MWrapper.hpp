@@ -9,12 +9,12 @@
 #define DRIVER_WRAPPER_RDA5807MWRAPPER_HPP_
 
 // System Includes
-#include <string>
 #include <cstdint>
+#include <string>
 
 // Project Includes
-#include "RDA5807M.hpp"
 #include "RadioResult.hpp"
+#include "RDA5807M.hpp"
 
 class RDA5807MWrapper
 {
