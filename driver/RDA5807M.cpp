@@ -15,26 +15,24 @@
 #include "Util.hpp"
 
 // Static variable initialization
-const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] =
-{
-    /* Reg 0x00 */  0x5800,
-    /* Reg 0x01 */  0x8000, // HighZ mode is disabled - it caused RSSI problems
-    /* Reg 0x02 */  0x0000,
-    /* Reg 0x03 */  0x0000,
-    /* Reg 0x04 */  0x0200,
-    /* Reg 0x05 */  0x880F,
-    /* Reg 0x06 */  0x0000,
-    /* Reg 0x07 */  0x4202,
-    /* Below are read-only regs */
-    /* Reg 0x08 */  0x0000,
-    /* Reg 0x09 */  0x0000,
-    /* Reg 0x0A */  0x0000,
-    /* Reg 0x0B */  0x0000,
-    /* Reg 0x0C */  0x0000,
-    /* Reg 0x0D */  0x0000,
-    /* Reg 0x0E */  0x0000,
-    /* Reg 0x0F */  0x0000
-};
+const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] = {
+        /* Reg 0x00 */0x5800,
+        /* Reg 0x01 */0x8000, // HighZ mode is disabled - it caused RSSI problems
+        /* Reg 0x02 */0x0000,
+        /* Reg 0x03 */0x0000,
+        /* Reg 0x04 */0x0200,
+        /* Reg 0x05 */0x880F,
+        /* Reg 0x06 */0x0000,
+        /* Reg 0x07 */0x4202,
+        /* Below are read-only regs */
+        /* Reg 0x08 */0x0000,
+        /* Reg 0x09 */0x0000,
+        /* Reg 0x0A */0x0000,
+        /* Reg 0x0B */0x0000,
+        /* Reg 0x0C */0x0000,
+        /* Reg 0x0D */0x0000,
+        /* Reg 0x0E */0x0000,
+        /* Reg 0x0F */0x0000 };
 
 RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
 {
@@ -72,7 +70,7 @@ void RDA5807M::setRegister(Register regNum, uint16_t value, uint16_t mask)
     // Align the mask's LSB to bit zero
     uint8_t shiftAmt = 0;
     uint16_t shiftedMask = mask;
-    
+
     while (((shiftedMask & 0x0001) == 0) && (shiftAmt < 16))
     {
         shiftedMask >>= 1;
@@ -112,20 +110,17 @@ bool RDA5807M::setI2cAddress(uint8_t addr)
     }
 }
 
-
 RDA5807M::I2c_Result RDA5807M::writeRegisterToDevice(Register reg)
 {
-    uint8_t dataToWrite[3] = {
-        static_cast<uint8_t>(reg),
-        static_cast<uint8_t>(registers[reg] >> 8),
-        static_cast<uint8_t>(registers[reg]) };
+    uint8_t dataToWrite[3] = { static_cast<uint8_t>(reg), static_cast<uint8_t>(registers[reg] >> 8),
+            static_cast<uint8_t>(registers[reg]) };
 
 //    std::printf("Writing: {reg: 0x%02x, upper: 0x%02x, lower: 0x%02x}\n", dataToWrite[0], dataToWrite[1], dataToWrite[2]);
-    
+
     mraa::Result result = i2cInterface.write(&dataToWrite[0], 3);
 
 //    std::cout << "\tMRAA Result: " << result << std::endl;
-    
+
     if (result == mraa::Result::SUCCESS)
     {
 //        std::cout << "\tWrite successful" << std::endl;
@@ -141,7 +136,7 @@ RDA5807M::I2c_Result RDA5807M::writeRegisterToDevice(Register reg)
 RDA5807M::I2c_Result RDA5807M::writeAllRegistersToDevice()
 {
     I2c_Result res = SUCCESS;
-    
+
     for (uint8_t regIdx = WRITE_REGISTER_BASE_IDX; regIdx <= WRITE_REGISTER_MAX_IDX; ++regIdx)
     {
         if (I2c_Result::FAILED == writeRegisterToDevice(static_cast<Register>(regIdx)))
@@ -161,7 +156,7 @@ uint16_t RDA5807M::readRegisterFromDevice(Register reg)
 
     data = (0xFFFF & dataLow);
     data |= dataHigh << 8;
-    
+
 //    std::printf("Read reg: 0x%02x; Value: 0x%04x\n", reg, data);
 
     return data;
@@ -194,7 +189,7 @@ void RDA5807M::setMute(bool muteEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -208,7 +203,7 @@ void RDA5807M::setHighImpedanceOutput(bool highImpedanceEnable, bool writeResult
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -222,7 +217,7 @@ void RDA5807M::setStereo(bool stereoEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -236,7 +231,7 @@ void RDA5807M::setBassBoost(bool bassBoostEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -257,7 +252,7 @@ void RDA5807M::setSeekDirection(SeekDirection seekDirection, bool writeResultToD
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -271,7 +266,7 @@ void RDA5807M::setSeek(bool seekEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -294,7 +289,7 @@ void RDA5807M::setSeekMode(SeekMode seekMode, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -308,7 +303,7 @@ void RDA5807M::setRDSMode(bool rdsEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -323,7 +318,7 @@ void RDA5807M::setNewMethod(bool newMethodEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -337,7 +332,7 @@ void RDA5807M::setSoftReset(bool softResetEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -351,7 +346,7 @@ void RDA5807M::setEnabled(bool enable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x02);
+        writeRegisterToDevice(REG_0x02);
     }
 }
 
@@ -365,7 +360,7 @@ void RDA5807M::setChannel(uint16_t channel, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x03);
+        writeRegisterToDevice(REG_0x03);
     }
 }
 
@@ -375,7 +370,7 @@ void RDA5807M::setTune(bool enable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x03);
+        writeRegisterToDevice(REG_0x03);
     }
 }
 
@@ -401,14 +396,14 @@ void RDA5807M::setBand(Band band, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x03);
+        writeRegisterToDevice(REG_0x03);
     }
 }
 
 void RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice)
 {
     uint8_t spacingBits = CHANNEL_SPACE_100KHZ;
-    
+
     switch (spacing)
     {
         case ONE_HUND_KHZ:
@@ -428,7 +423,7 @@ void RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevic
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x03);
+        writeRegisterToDevice(REG_0x03);
     }
 }
 
@@ -448,7 +443,7 @@ void RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x03);
+        writeRegisterToDevice(REG_0x03);
     }
 }
 
@@ -458,7 +453,7 @@ void RDA5807M::setAFCD(bool afcdEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x04);
+        writeRegisterToDevice(REG_0x04);
     }
 }
 
@@ -472,7 +467,7 @@ void RDA5807M::setVolume(uint8_t volume, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x05);
+        writeRegisterToDevice(REG_0x05);
     }
 }
 
@@ -482,7 +477,7 @@ void RDA5807M::setSoftMute(bool softMuteEnable, bool writeResultToDevice)
 
     if (writeResultToDevice)
     {
-    	writeRegisterToDevice(REG_0x04);
+        writeRegisterToDevice(REG_0x04);
     }
 }
 
@@ -537,7 +532,7 @@ bool RDA5807M::isStereoEnabled()
 uint16_t RDA5807M::getReadChannel()
 {
     registers[REG_0x0A] = readRegisterFromDevice(REG_0x0A);
-    
+
     uint16_t readChannel = Util::valueFromReg(registers[REG_0x0A], READCHAN);
 
     return (readChannel + 870);
@@ -555,9 +550,9 @@ bool RDA5807M::isFmReady()
 
 uint8_t RDA5807M::getRssi()
 {
-	registers[REG_0x0B] = readRegisterFromDevice(REG_0x0B);
-	return static_cast<uint8_t>(Util::valueFromReg(registers[REG_0x0B],
-			RSSI));
+    registers[REG_0x0B] = readRegisterFromDevice(REG_0x0B);
+    return static_cast<uint8_t>(Util::valueFromReg(registers[REG_0x0B],
+    RSSI));
 }
 
 void RDA5807M::printStatus()
@@ -570,6 +565,6 @@ void RDA5807M::printStatus()
     std::printf("Audio type: %s\n", isStereoEnabled() ? "Stereo" : "Mono");
     std::printf("Read channel: %u\n", getReadChannel());
     std::printf("Rssi: 0x%02x\n", getRssi());
-	std::printf("Is this freq a station?: %s\n", isFmTrue() ? "Yes" : "No");
+    std::printf("Is this freq a station?: %s\n", isFmTrue() ? "Yes" : "No");
     std::printf("FM Ready?: %s\n", isFmReady() ? "Yes" : "No");
 }

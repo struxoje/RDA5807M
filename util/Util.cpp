@@ -21,7 +21,7 @@ uint16_t Util::valueFromReg(uint16_t regContent, uint16_t mask)
 {
     uint8_t shiftAmt = 0;
     uint16_t shiftedMask = mask;
-    
+
     while (((shiftedMask & 0x0001) == 0) && (shiftAmt < 16))
     {
         shiftedMask >>= 1;
@@ -51,15 +51,13 @@ uint16_t Util::boolToInteger(bool boolean)
  */
 bool Util::boolFromInteger(int val)
 {
-	if (val > 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+    if (val > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
-
-
 

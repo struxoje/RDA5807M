@@ -12,7 +12,6 @@
 // Project includes
 //<none>
 
-
 namespace Util
 {
     uint16_t valueFromReg(uint16_t regContent, uint16_t mask);

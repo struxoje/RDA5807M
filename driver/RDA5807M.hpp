@@ -22,7 +22,8 @@ public:
     //////////////////////
     // Enum Definitions //
     //////////////////////
-    enum Register {
+    enum Register
+    {
         REG_0x00 = 0x00,
         REG_0x01 = 0x01,
         REG_0x02 = 0x02,
@@ -40,7 +41,7 @@ public:
         REG_0x0E = 0x0E,
         REG_0x0F = 0x0F
     };
-    
+
     enum SeekDirection {SEEK_UP, SEEK_DOWN};
     enum SeekMode {WRAP_AT_LIMIT, STOP_AT_LIMIT};
     enum I2c_Result {SUCCESS, FAILED};
@@ -56,7 +57,7 @@ public:
 
     // Updates the local register map, but DOES NOT WRITE the changes
     // to the device
-    void setRegister(Register regNum, uint16_t value, uint16_t mask=0xFF);
+    void setRegister(Register regNum, uint16_t value, uint16_t mask = 0xFF);
 
     I2c_Result writeRegisterToDevice(Register reg);
 
@@ -69,43 +70,43 @@ public:
     void printRegisterMap();
 
     // FUNCTIONS USED TO ENABLE/DISABLE RADIO MODES
-    void setMute(bool muteEnable, bool writeResultToDevice=true);
+    void setMute(bool muteEnable, bool writeResultToDevice = true);
 
-    void setHighImpedanceOutput(bool highImpedanceEnable, bool writeResultToDevice=true);
+    void setHighImpedanceOutput(bool highImpedanceEnable, bool writeResultToDevice = true);
 
-    void setStereo(bool stereoEnable, bool writeResultToDevice=true);
+    void setStereo(bool stereoEnable, bool writeResultToDevice = true);
 
-    void setBassBoost(bool bassBoostEnable, bool writeResultToDevice=true);
+    void setBassBoost(bool bassBoostEnable, bool writeResultToDevice = true);
 
-    void setSeekDirection(SeekDirection seekDirection, bool writeResultToDevice=true);
+    void setSeekDirection(SeekDirection seekDirection, bool writeResultToDevice = true);
 
-    void setSeek(bool seekEnable, bool writeResultToDevice=true);
+    void setSeek(bool seekEnable, bool writeResultToDevice = true);
 
-    void setSeekMode(SeekMode seekMode, bool writeResultToDevice=true);
+    void setSeekMode(SeekMode seekMode, bool writeResultToDevice = true);
 
-    void setRDSMode(bool rdsEnable, bool writeResultToDevice=true);
+    void setRDSMode(bool rdsEnable, bool writeResultToDevice = true);
 
-    void setNewMethod(bool newMethodEnable, bool writeResultToDevice=true);
+    void setNewMethod(bool newMethodEnable, bool writeResultToDevice = true);
 
-    void setSoftReset(bool softResetEnable, bool writeResultToDevice=true);
+    void setSoftReset(bool softResetEnable, bool writeResultToDevice = true);
 
-    void setEnabled(bool enable, bool writeResultToDevice=true);
+    void setEnabled(bool enable, bool writeResultToDevice = true);
 
-    void setChannel(uint16_t channel, bool writeResultToDevice=true);
+    void setChannel(uint16_t channel, bool writeResultToDevice = true);
 
-    void setTune(bool enable, bool writeResultToDevice=true);
+    void setTune(bool enable, bool writeResultToDevice = true);
 
-    void setBand(Band band, bool writeResultToDevice=true);
+    void setBand(Band band, bool writeResultToDevice = true);
 
-    void setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice=true);
+    void setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice = true);
 
-    void setVolume(uint8_t volume, bool writeResultToDevice=true);
+    void setVolume(uint8_t volume, bool writeResultToDevice = true);
 
-    void setDeEmphasis(DeEmphasis de, bool writeResultToDevice=true);
+    void setDeEmphasis(DeEmphasis de, bool writeResultToDevice = true);
 
-    void setAFCD(bool afcdEnable, bool writeResultToDevice=true);
+    void setAFCD(bool afcdEnable, bool writeResultToDevice = true);
 
-    void setSoftMute(bool softMuteEnable, bool writeResultToDevice=true);
+    void setSoftMute(bool softMuteEnable, bool writeResultToDevice = true);
 
     bool retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask);
 
@@ -154,14 +155,14 @@ private:
     // This driver makes use of the random access I2C mode, which
     // isn't documented well for this chip. Nonetheless, it's less
     // of a pain to use than the sequential access mode.
-    static const uint8_t SEQUENTIAL_ACCESS_I2C_MODE_ADDR = 0x10; 
+    static const uint8_t SEQUENTIAL_ACCESS_I2C_MODE_ADDR = 0x10;
     static const uint8_t RANDOM_ACCESS_I2C_MODE_ADDR = 0x11;
 
     // Number of bytes in the register map
     static const uint16_t REGISTER_MAP_SIZE_BYTES = sizeof(REGISTER_MAP_DEFAULT_STATE);
 
     // Number of registers in the register map
-    static const uint16_t REGISTER_MAP_SIZE_REGISTERS = sizeof(REGISTER_MAP_DEFAULT_STATE)/sizeof(uint16_t);
+    static const uint16_t REGISTER_MAP_SIZE_REGISTERS = sizeof(REGISTER_MAP_DEFAULT_STATE) / sizeof(uint16_t);
 
     // Band selection constants
     static const uint8_t US_EUR_BAND_SELECT = 0x00;
@@ -190,7 +191,7 @@ private:
     /////////////////////////////////
     bool setI2cAddress(uint8_t addr);
     void init();
-    
+
     //////////////////////////////
     // Private member variables //
     //////////////////////////////
