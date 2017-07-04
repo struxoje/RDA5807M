@@ -11,6 +11,8 @@
 
 // Project includes
 #include "RDA5807M.hpp"
+#include "RDA5807MWrapper.hpp"
+#include "CommandParser.hpp"
 
 RDA5807M radio;
 
@@ -32,46 +34,22 @@ int main() {
 
     sleep(1);
 
+    RDA5807MWrapper wrapper{radio};
+    CommandParser parser{wrapper};
+
     radio.setChannel(949);
     radio.setVolume(0x00);
     radio.setTune(true);
     radio.setMute(false);
     radio.writeAllRegistersToDevice();
 
-    for (uint8_t i = 0; i < 9; i++) {
-        radio.setVolume(i);
-        radio.writeAllRegistersToDevice();
-        sleep(1);
+    while(true)
+    {
+    	std::cout << "Enter Command: " << std::endl;
+    	std::string line = "";
+    	std::getline(std::cin, line);
+    	std::cout << "Entered: " << line << std::endl;
+    	parser.execute(line);
+    	std::cout << "\n\n" << std::endl;
     }
-
-    while (true) {
-        radio.setSeek(true);
-        radio.readDeviceRegistersAndStoreLocally();
-        radio.printStatus();
-        sleep(5);
-        std::cout << "\n\n\n" << std::endl;
-    }
-
-    /*    while (true) {
-     for (int i = 870; i < 1080; i++) {
-     std::cout << "Setting freq: " << i << std::endl;
-     radio.setChannel(i);
-     radio.setTune(true);
-     radio.writeRegisterToDevice(RDA5807M::Register::REG_0x03);
-     usleep(400000);
-     radio.printStatus();
-     if (radio.getRssi() > 0x10) {
-     radio.setMute(false);
-     radio.writeRegisterToDevice(RDA5807M::Register::REG_0x02);
-     radio.readDeviceRegistersAndStoreLocally();
-     radio.printRegisterMap();
-     sleep(5);
-     } else {
-     radio.setMute(true);
-     radio.writeRegisterToDevice(RDA5807M::Register::REG_0x02);
-     }
-     std::printf("\n\n\n");
-     }
-     }
-     */
 }

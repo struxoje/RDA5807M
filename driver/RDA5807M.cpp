@@ -113,7 +113,7 @@ bool RDA5807M::setI2cAddress(uint8_t addr)
 }
 
 
-RDA5807M::Result RDA5807M::writeRegisterToDevice(Register reg)
+RDA5807M::I2c_Result RDA5807M::writeRegisterToDevice(Register reg)
 {
     uint8_t dataToWrite[3] = {
         static_cast<uint8_t>(reg),
@@ -129,22 +129,22 @@ RDA5807M::Result RDA5807M::writeRegisterToDevice(Register reg)
     if (result == mraa::Result::SUCCESS)
     {
 //        std::cout << "\tWrite successful" << std::endl;
-        return Result::SUCCESS;
+        return I2c_Result::SUCCESS;
     }
     else
     {
         std::cout << "\tWrite failed" << std::endl;
-        return Result::FAILED;
+        return I2c_Result::FAILED;
     }
 }
 
-RDA5807M::Result RDA5807M::writeAllRegistersToDevice()
+RDA5807M::I2c_Result RDA5807M::writeAllRegistersToDevice()
 {
-    Result res = SUCCESS;
+    I2c_Result res = SUCCESS;
     
     for (uint8_t regIdx = WRITE_REGISTER_BASE_IDX; regIdx <= WRITE_REGISTER_MAX_IDX; ++regIdx)
     {
-        if (Result::FAILED == writeRegisterToDevice(static_cast<Register>(regIdx)))
+        if (I2c_Result::FAILED == writeRegisterToDevice(static_cast<Register>(regIdx)))
         {
             res = FAILED;
         }
@@ -188,43 +188,63 @@ void RDA5807M::printRegisterMap()
 /**
  * Enables mute if muteEnable is true, disables mute if muteEnable is false
  */
-void RDA5807M::setMute(bool muteEnable)
+void RDA5807M::setMute(bool muteEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(!muteEnable), DMUTE);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
  * Enables high impedance output mode if highImpedanceEnable is true,
  * enables normal operation if highImpedanceEmable is false.
  */
-void RDA5807M::setHighImpedanceOutput(bool highImpedanceEnable)
+void RDA5807M::setHighImpedanceOutput(bool highImpedanceEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(!highImpedanceEnable), DHIZ);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
  * Enables stereo mode if stereoEnable is true, forces mono mode if
  * stereoEnable is false.
  */
-void RDA5807M::setStereo(bool stereoEnable)
+void RDA5807M::setStereo(bool stereoEnable, bool writeResultToDevice)
 {
-    setRegister(REG_0x02, Util::boolToInteger(!stereoEnable), DMONO);    
+    setRegister(REG_0x02, Util::boolToInteger(!stereoEnable), DMONO);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
  * Enables bass bost if bassBostEnabe is true, disables bass boost if
  * bassBostEnable is false
  */
-void RDA5807M::setBassBoost(bool bassBoostEnable)
+void RDA5807M::setBassBoost(bool bassBoostEnable, bool writeResultToDevice)
 {
-    setRegister(REG_0x02, Util::boolToInteger(bassBoostEnable), DBASS);    
+    setRegister(REG_0x02, Util::boolToInteger(bassBoostEnable), DBASS);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
  * Sets the seek direction to up if seekDirection is SEEK_UP,
  * and sets the seek direction to down if seekDirection is SEEK_DOWN.
  */
-void RDA5807M::setSeekDirection(SeekDirection seekDirection)
+void RDA5807M::setSeekDirection(SeekDirection seekDirection, bool writeResultToDevice)
 {
     if (seekDirection == SeekDirection::SEEK_DOWN)
     {
@@ -234,15 +254,25 @@ void RDA5807M::setSeekDirection(SeekDirection seekDirection)
     {
         setRegister(REG_0x02, 0xFF, SEEKUP);
     }
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
  * Enables seek mode if seekEnable is true, and disables seek mode if seekEnable
  * is false.
  */
-void RDA5807M::setSeek(bool seekEnable)
+void RDA5807M::setSeek(bool seekEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(seekEnable), SEEK);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
@@ -251,7 +281,7 @@ void RDA5807M::setSeek(bool seekEnable)
  * If seekMode is STOP_AT_LIMIT, when the seek operation reaches a band limit,
  * seeking will stop.
  */
-void RDA5807M::setSeekMode(SeekMode seekMode)
+void RDA5807M::setSeekMode(SeekMode seekMode, bool writeResultToDevice)
 {
     if (seekMode == SeekMode::STOP_AT_LIMIT)
     {
@@ -261,15 +291,25 @@ void RDA5807M::setSeekMode(SeekMode seekMode)
     {
         setRegister(REG_0x02, 0x00, SKMODE);
     }
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
  * Enables RDS/RBDS if rdsEnables is true. Disables RDS/RBDS if rdsEnable
  * is false.
  */
-void RDA5807M::setRDSMode(bool rdsEnable)
+void RDA5807M::setRDSMode(bool rdsEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(rdsEnable), RDS_EN);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
@@ -277,44 +317,69 @@ void RDA5807M::setRDSMode(bool rdsEnable)
  * by about 1dB." If newMethodEnable is true, the new method is enabled, and if
  * newMethodEnabled is false, the new method is disabled.
  */
-void RDA5807M::setNewMethod(bool newMethodEnable)
+void RDA5807M::setNewMethod(bool newMethodEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(newMethodEnable), NEW_METHOD);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
  * Puts the radio in soft reset mode if softResetEnable is true,
  * removes the radio from soft reset mode if softResetEnable is false.
  */
-void RDA5807M::setSoftReset(bool softResetEnable)
+void RDA5807M::setSoftReset(bool softResetEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(softResetEnable), SOFT_RESET);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 /**
  * Enables powerup of the radio if enable is true, turns radio power off
  * if enable is false.
  */
-void RDA5807M::setEnabled(bool enable)
+void RDA5807M::setEnabled(bool enable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(enable), ENABLE);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x02);
+    }
 }
 
 // TODO this depends on channel spacing!
 // We assume 100KHz spacing and US band currently, and the channel
 // must be in terms of 10f - that is, 985 for 98.5MHz, for example
-void RDA5807M::setChannel(uint16_t channel)
+void RDA5807M::setChannel(uint16_t channel, bool writeResultToDevice)
 {
     uint16_t chan = channel - 870;
     setRegister(REG_0x03, chan, CHAN);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x03);
+    }
 }
 
-void RDA5807M::setTune(bool enable)
+void RDA5807M::setTune(bool enable, bool writeResultToDevice)
 {
     setRegister(REG_0x03, Util::boolToInteger(enable), TUNE);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x03);
+    }
 }
 
-void RDA5807M::setBand(Band band)
+void RDA5807M::setBand(Band band, bool writeResultToDevice)
 {
     uint8_t bandBits = US_EUR_BAND_SELECT;
     switch (band)
@@ -333,9 +398,14 @@ void RDA5807M::setBand(Band band)
             break;
     }
     setRegister(REG_0x03, bandBits, BAND);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x03);
+    }
 }
 
-void RDA5807M::setChannelSpacing(ChannelSpacing spacing)
+void RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice)
 {
     uint8_t spacingBits = CHANNEL_SPACE_100KHZ;
     
@@ -355,9 +425,14 @@ void RDA5807M::setChannelSpacing(ChannelSpacing spacing)
             break;
     }
     setRegister(REG_0x03, spacingBits, SPACE);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x03);
+    }
 }
 
-void RDA5807M::setDeEmphasis(DeEmphasis de)
+void RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultToDevice)
 {
     uint8_t deemphasisBits = DEEMP_75_US;
     switch (de)
@@ -370,25 +445,45 @@ void RDA5807M::setDeEmphasis(DeEmphasis de)
             break;
     }
     setRegister(REG_0x04, deemphasisBits, DE);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x03);
+    }
 }
 
-void RDA5807M::setAFCD(bool afcdEnable)
+void RDA5807M::setAFCD(bool afcdEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x04, Util::boolToInteger(afcdEnable), AFCD);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x04);
+    }
 }
 
 /**
  * Sets the radio volume. volume = 1111 is maximum, and volume = 0
  * is muted. The volume scale is "logarithmic" as per the manual.
  */
-void RDA5807M::setVolume(uint8_t volume)
+void RDA5807M::setVolume(uint8_t volume, bool writeResultToDevice)
 {
     setRegister(REG_0x05, volume, VOLUME);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x05);
+    }
 }
 
-void RDA5807M::setSoftMute(bool softMuteEnable)
+void RDA5807M::setSoftMute(bool softMuteEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x04, Util::boolToInteger(softMuteEnable), SOFTMUTE_EN);
+
+    if (writeResultToDevice)
+    {
+    	writeRegisterToDevice(REG_0x04);
+    }
 }
 
 bool RDA5807M::retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask)

@@ -1,0 +1,1 @@
+clang++ Util.cpp RDA5807M.cpp main.cpp -lmraa -std=c++14 -mno-sse -mno-mmx -march=i586 -o radio

@@ -43,7 +43,7 @@ public:
     
     enum SeekDirection {SEEK_UP, SEEK_DOWN};
     enum SeekMode {WRAP_AT_LIMIT, STOP_AT_LIMIT};
-    enum Result {SUCCESS, FAILED};
+    enum I2c_Result {SUCCESS, FAILED};
     enum Band {US_EUR, JAP, WORLD_WIDE, EAST_EUROPE};
     enum ChannelSpacing {ONE_HUND_KHZ, TWO_HUND_KHZ, FIFTY_KHZ, TWENTY_FIVE_KHZ};
     enum DeEmphasis {SEVENTY_FIVE_US, FIFTY_US};
@@ -58,9 +58,9 @@ public:
     // to the device
     void setRegister(Register regNum, uint16_t value, uint16_t mask=0xFF);
 
-    Result writeRegisterToDevice(Register reg);
+    I2c_Result writeRegisterToDevice(Register reg);
 
-    Result writeAllRegistersToDevice();
+    I2c_Result writeAllRegistersToDevice();
 
     void readDeviceRegistersAndStoreLocally();
 
@@ -69,43 +69,43 @@ public:
     void printRegisterMap();
 
     // FUNCTIONS USED TO ENABLE/DISABLE RADIO MODES
-    void setMute(bool muteEnable);
+    void setMute(bool muteEnable, bool writeResultToDevice=true);
 
-    void setHighImpedanceOutput(bool highImpedanceEnable);
+    void setHighImpedanceOutput(bool highImpedanceEnable, bool writeResultToDevice=true);
 
-    void setStereo(bool stereoEnable);
+    void setStereo(bool stereoEnable, bool writeResultToDevice=true);
 
-    void setBassBoost(bool bassBoostEnable);
+    void setBassBoost(bool bassBoostEnable, bool writeResultToDevice=true);
 
-    void setSeekDirection(SeekDirection seekDirection);
+    void setSeekDirection(SeekDirection seekDirection, bool writeResultToDevice=true);
 
-    void setSeek(bool seekEnable);
+    void setSeek(bool seekEnable, bool writeResultToDevice=true);
 
-    void setSeekMode(SeekMode seekMode);
+    void setSeekMode(SeekMode seekMode, bool writeResultToDevice=true);
 
-    void setRDSMode(bool rdsEnable);
+    void setRDSMode(bool rdsEnable, bool writeResultToDevice=true);
 
-    void setNewMethod(bool newMethodEnable);
+    void setNewMethod(bool newMethodEnable, bool writeResultToDevice=true);
 
-    void setSoftReset(bool softResetEnable);
+    void setSoftReset(bool softResetEnable, bool writeResultToDevice=true);
 
-    void setEnabled(bool enable);
+    void setEnabled(bool enable, bool writeResultToDevice=true);
 
-    void setChannel(uint16_t channel);
+    void setChannel(uint16_t channel, bool writeResultToDevice=true);
 
-    void setTune(bool enable);
+    void setTune(bool enable, bool writeResultToDevice=true);
 
-    void setBand(Band band);
+    void setBand(Band band, bool writeResultToDevice=true);
 
-    void setChannelSpacing(ChannelSpacing spacing);
+    void setChannelSpacing(ChannelSpacing spacing, bool writeResultToDevice=true);
 
-    void setVolume(uint8_t volume);
+    void setVolume(uint8_t volume, bool writeResultToDevice=true);
 
-    void setDeEmphasis(DeEmphasis de);
+    void setDeEmphasis(DeEmphasis de, bool writeResultToDevice=true);
 
-    void setAFCD(bool afcdEnable);
+    void setAFCD(bool afcdEnable, bool writeResultToDevice=true);
 
-    void setSoftMute(bool softMuteEnable);
+    void setSoftMute(bool softMuteEnable, bool writeResultToDevice=true);
 
     bool retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask);
 

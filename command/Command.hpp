@@ -13,23 +13,32 @@
 
 // Project includes
 #include "RDA5807M.hpp"
+#include "RadioResult.hpp"
+#include "RDA5807MWrapper.hpp"
 
+template<typename T>
 class Command
 {
 public:
+
+	// Alias declarations to the rescue!
+	using WrapperFunction = RadioResult<T> (RDA5807MWrapper::*)(int);
+
     ////////////////////////////////
     // Public interface functions //
     ////////////////////////////////
-	Command(std::string command, void (RDA5807M::* func)());
+	Command(std::string commandParam, WrapperFunction cmdFuncParam) : command(commandParam), cmdFunc(cmdFuncParam) {};
 
-	void exec(RDA5807M& radio, T funcParam);
+	RadioResult<T> exec(int param, RDA5807MWrapper& wrapRef) { return (wrapRef.*cmdFunc)(param); }
+
+	std::string getCommand() {return command;}
 
 private:
     //////////////////////////////
     // Private member variables //
     //////////////////////////////
 	std::string command;
-	void (RDA5807M::* func)(T);
+	WrapperFunction cmdFunc;
 
 };
 

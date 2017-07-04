@@ -10,11 +10,13 @@
 
 // System includes
 #include <cstdint>
-#include <vector>
+#include <regex>
+#include <string>
 
 // Project includes
 #include "RDA5807M.hpp"
 #include "Command.hpp"
+#include "RadioResult.hpp"
 
 class CommandParser
 {
@@ -22,21 +24,28 @@ public:
     ////////////////////////////////
     // Public interface functions //
     ////////////////////////////////
+	CommandParser(RDA5807MWrapper& radioWrapperParam) : radioWrapper(radioWrapperParam) {};
 
+	std::string execute(std::string& unparsedCommand);
 
 private:
-    /////////////////////////////
-    // Private class Constants //
-    /////////////////////////////
-
     /////////////////////////////////
     // Private interface functions //
     /////////////////////////////////
+	bool parse(const std::string& unparsedCommand, std::string& command, int& param);
+
+    /////////////////////////////
+    // Private class Constants //
+    /////////////////////////////
+	static const Command<RDA5807MWrapper::StatusResult> statusResultCommands[];
+	static const Command<std::string> stringResultCommands[];
+	static const Command<uint32_t> uInt32ResultCommands[];
+	static const std::regex CMD_REGEX;
 
     //////////////////////////////
     // Private member variables //
     //////////////////////////////
-	std::vector<Command> commands;
+	RDA5807MWrapper& radioWrapper;
 };
 
 

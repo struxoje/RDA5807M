@@ -1,0 +1,4 @@
+- Guide to pointers to members
+	https://isocpp.org/wiki/faq/pointers-to-members
+
+	
