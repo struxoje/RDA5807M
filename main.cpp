@@ -15,8 +15,10 @@
 
 RDA5807M radio;
 
-void die(int unused)
+void die(int UNUSED)
 {
+    (void) UNUSED;
+
     radio.setVolume(0x00);
     radio.writeRegisterToDevice(RDA5807M::Register::REG_0x05);
 
@@ -39,7 +41,7 @@ int main()
     CommandParser parser { wrapper };
 
     while (true) {
-        std::cout << "Enter Command: " << std::endl;
+        std::cout << "Enter Command: " << std::flush;
         std::string line = "";
         std::getline(std::cin, line);
         std::string result = parser.execute(line);

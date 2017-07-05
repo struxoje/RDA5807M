@@ -85,12 +85,16 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setRadioEnableState(int rad
 
 RadioResult<std::string> RDA5807MWrapper::getStatusString(int UNUSED)
 {
+    (void) UNUSED;
+
     radio.readDeviceRegistersAndStoreLocally();
     return radio.getStatusString();
 }
 
 RadioResult<std::string> RDA5807MWrapper::getRegisterMapString(int UNUSED)
 {
+    (void) UNUSED;
+
     return radio.getRegisterMap();
 }
 
@@ -136,12 +140,14 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setTune(int tuneEnable)
 
 RadioResult<std::string> RDA5807MWrapper::generateFreqMap(int UNUSED)
 {
+    (void) UNUSED;
+
     std::string results{""};
     radio.setMute(true);
     for (int freq = 880; freq <= 1080; freq+=1)
     {
         setFrequency(freq);
-        usleep(100*1000);
+        usleep(100*MICROS_IN_MILLIS);
 
         // Generate freq bars
         uint8_t rssi = radio.getRssi();
@@ -149,7 +155,7 @@ RadioResult<std::string> RDA5807MWrapper::generateFreqMap(int UNUSED)
         std::memset(barBuff, '|', rssi);
         barBuff[rssi] = '\0';
 
-        char fullBuff[160] = {0};
+        char fullBuff[150] = {0};
         std::sprintf(fullBuff, "Freq: %u\tRSSI: %s\n", freq, barBuff);
         results.append(fullBuff);
     }

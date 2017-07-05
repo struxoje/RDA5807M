@@ -50,12 +50,12 @@ const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
 };
 
 const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] = {};
-
-const std::regex CommandParser::CMD_REGEX { "^([a-zA-Z]+){1}=*([0-9]*)"};
-const std::string CommandParser::LIST_CMDS_COMMAND_STRING = "LISTCMDS";
 const size_t CommandParser::STATUS_RESULT_COMMANDS_LIST_LENGTH = sizeof(STATUS_RESULT_COMMANDS) / sizeof(Command<RDA5807M::StatusResult>);
 const size_t CommandParser::STRING_RESULT_COMMANDS_LIST_LENGTH = sizeof(STRING_RESULT_COMMANDS) / sizeof(Command<std::string>);
 const size_t CommandParser::UINT32_RESULT_COMMANDS_LIST_LENGTH = sizeof(UINT32_RESULT_COMMANDS) / sizeof(Command<uint32_t>);
+
+const std::regex CommandParser::CMD_REGEX { "^([a-zA-Z]+){1}=*([0-9]*)"};
+const std::string CommandParser::LIST_CMDS_COMMAND_STRING = "HELP";
 
 /**
  * The command specified by LIST_CMDS_COMMAND_STRING will result in a list of supported
@@ -68,12 +68,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
     int param;
 
     bool parseResult = parse(unparsedCommand, cmd, param);
-    if (parseResult)
-    {
-        std::cout << "Found command: " << cmd << std::endl;
-        std::cout << "Found value: " << param << std::endl;
-    }
-    else
+    if (!parseResult)
     {
         return "COMMAND NOT VALID!";
     }
@@ -88,7 +83,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
         Command<RDA5807M::StatusResult> statusResultCmd = STATUS_RESULT_COMMANDS[idx];
         if (cmd.compare(statusResultCmd.getCommandString()) == 0)
         {
-            std::cout << "Executing: " << cmd << "; Param: " << param << std::endl;
+            std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
             return RDA5807M::statusResultToString(statusResultCmd.exec(param, radioWrapper).getResult());
         }
     }
@@ -98,8 +93,18 @@ std::string CommandParser::execute(std::string& unparsedCommand)
         Command<std::string> stringResultCmd = STRING_RESULT_COMMANDS[idx];
         if (cmd.compare(stringResultCmd.getCommandString()) == 0)
         {
-            std::cout << "Executing: " << cmd << "; Param: " << param << std::endl;
+            std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
             return stringResultCmd.exec(param, radioWrapper).getResult();
+        }
+    }
+
+    for (size_t idx = 0; idx < UINT32_RESULT_COMMANDS_LIST_LENGTH; ++idx)
+    {
+        Command<uint32_t> uintResultCmd = UINT32_RESULT_COMMANDS[idx];
+        if (cmd.compare(uintResultCmd.getCommandString()) == 0)
+        {
+            std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
+            return std::to_string(uintResultCmd.exec(param, radioWrapper).getResult());
         }
     }
 

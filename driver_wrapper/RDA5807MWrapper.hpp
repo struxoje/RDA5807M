@@ -52,6 +52,11 @@ public:
     RadioResult<std::string> generateFreqMap(int UNUSED);
 
 private:
+    /////////////////////////////
+    // Private Class Constants //
+    /////////////////////////////
+    static const int MICROS_IN_MILLIS = 1000;
+
     ///////////////////////////
     // Private Class Members //
     ///////////////////////////

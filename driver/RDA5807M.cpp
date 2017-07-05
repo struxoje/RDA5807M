@@ -198,16 +198,23 @@ void RDA5807M::readDeviceRegistersAndStoreLocally()
     }
 }
 
+/**
+ * Generates a fancy-formatted version of the register map
+ */
 std::string RDA5807M::getRegisterMap()
 {
     char buffer[50] = {0};
-    std::string regMap{""};
+    std::string regMap{"\n _______________\n"};
+
+    regMap.append("| REG  | VALUE  |\n");
+
     for (uint16_t regIdx = 0; regIdx < REGISTER_MAP_SIZE_REGISTERS; ++regIdx)
     {
-        std::sprintf(buffer,"Reg: 0x%02x; Value: 0x%04x\n", regIdx, registers[regIdx]);
+        std::sprintf(buffer,"| 0x%02x | 0x%04x |\n", regIdx, registers[regIdx]);
+        regMap.append("|---------------|\n");
         regMap.append(buffer);
     }
-
+    regMap.append("|===============|");
     return regMap;
 }
 
@@ -555,7 +562,7 @@ std::string RDA5807M::getStatusString()
     std::sprintf(buffer, "Read channel: %u\n", getReadChannel());
     status.append(buffer);
 
-    std::sprintf(buffer, "Rssi: 0x%02x\n", getRssi());
+    std::sprintf(buffer, "RSSI: 0x%02x\n", getRssi());
     status.append(buffer);
 
     std::sprintf(buffer, "Is this freq a station?: %s\n", isFmTrue() ? "Yes" : "No");
