@@ -30,12 +30,12 @@ public:
     Command(std::string commandParam, WrapperFunction cmdFuncParam) :
             command(commandParam), cmdFunc(cmdFuncParam) {};
 
-    RadioResult<T> exec(int param, RDA5807MWrapper& wrapRef)
+    RadioResult<T> exec(int param, RDA5807MWrapper& wrapRef) const
     {
         return (wrapRef.*cmdFunc)(param);
     }
 
-    std::string getCommand()
+    std::string getCommand() const
     {
         return command;
     }
@@ -44,8 +44,8 @@ private:
     //////////////////////////////
     // Private member variables //
     //////////////////////////////
-    std::string command;
-    WrapperFunction cmdFunc;
+    const std::string command;
+    const WrapperFunction cmdFunc;
 
 };
 

@@ -3,7 +3,6 @@
  * Author: Ben Sherman
  *************************************************/
 
-// Avoid enabling hiz mode. Both cause RSSI to bug out
 // System includes
 #include <iostream>
 #include <signal.h>
@@ -45,6 +44,6 @@ int main()
         std::getline(std::cin, line);
         std::string result = parser.execute(line);
         std::cout << "Exec Result: " << result << std::endl;
-        std::cout << "\n\n" << std::endl;
+        std::cout << "\n" << std::endl;
     }
 }

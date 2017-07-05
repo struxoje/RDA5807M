@@ -34,15 +34,30 @@ const Command<RDA5807M::StatusResult> CommandParser::STATUS_RESULT_COMMANDS[] =
     Command<RDA5807M::StatusResult> { "SOFTRESET", &RDA5807MWrapper::setSoftReset },
     Command<RDA5807M::StatusResult> { "SOFTMUTE", &RDA5807MWrapper::setSoftMute },
     Command<RDA5807M::StatusResult> { "TUNE", &RDA5807MWrapper::setTune },
+    Command<RDA5807M::StatusResult> { "AFCD", &RDA5807MWrapper::setAFCD },
+    Command<RDA5807M::StatusResult> { "DEEMPHASIS", &RDA5807MWrapper::setDeEmphasis },
+    Command<RDA5807M::StatusResult> { "BAND", &RDA5807MWrapper::setBand },
+    Command<RDA5807M::StatusResult> { "CHANNELSPACING", &RDA5807MWrapper::setChannelSpacing },
+    Command<RDA5807M::StatusResult> { "SEEKDIR", &RDA5807MWrapper::setSeekDirection },
+    Command<RDA5807M::StatusResult> { "SEEKMODE", &RDA5807MWrapper::setSeekMode },
+    Command<RDA5807M::StatusResult> { "SOFTBLEND", &RDA5807MWrapper::setSoftBlend }
 };
 
 const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
 {
     Command<std::string> { "STATUS", &RDA5807MWrapper::getStatusString },
-    Command<std::string> { "REGMAP", &RDA5807MWrapper::getRegisterMapString }
+    Command<std::string> { "REGMAP", &RDA5807MWrapper::getRegisterMapString },
+    Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap }
 };
 
-const std::regex CommandParser::CMD_REGEX { "^([A-Z]+){1}=*([0-9]*)"};
+const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] = {};
+
+const std::regex CommandParser::CMD_REGEX { "^([a-zA-Z]+){1}=*([0-9]*)"};
+const std::string CommandParser::LIST_CMDS_COMMAND_STRING = "LISTCMDS";
+const size_t CommandParser::STATUS_RESULT_COMMANDS_LIST_LENGTH = sizeof(STATUS_RESULT_COMMANDS) / sizeof(Command<RDA5807M::StatusResult>);
+const size_t CommandParser::STRING_RESULT_COMMANDS_LIST_LENGTH = sizeof(STRING_RESULT_COMMANDS) / sizeof(Command<std::string>);
+const size_t CommandParser::UINT32_RESULT_COMMANDS_LIST_LENGTH = sizeof(UINT32_RESULT_COMMANDS) / sizeof(Command<uint32_t>);
+
 
 std::string CommandParser::execute(std::string& unparsedCommand)
 {
@@ -52,12 +67,20 @@ std::string CommandParser::execute(std::string& unparsedCommand)
     bool parseResult = parse(unparsedCommand, cmd, param);
     if (parseResult)
     {
-        std::cout << "Parsed command: " << cmd << std::endl;
-        std::cout << "Parsed value: " << param << std::endl;
-
+        std::cout << "Found command: " << cmd << std::endl;
+        std::cout << "Found value: " << param << std::endl;
+    }
+    else
+    {
+        return "COMMAND NOT VALID!";
     }
 
-    for (size_t idx = 0; idx < sizeof(STATUS_RESULT_COMMANDS) / sizeof(Command<RDA5807M::StatusResult> ); ++idx)
+    if (cmd.compare(LIST_CMDS_COMMAND_STRING) == 0)
+    {
+        return getCommandList();
+    }
+
+    for (size_t idx = 0; idx < STATUS_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         Command<RDA5807M::StatusResult> statusResultCmd = STATUS_RESULT_COMMANDS[idx];
         if (cmd.compare(statusResultCmd.getCommand()) == 0)
@@ -67,7 +90,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
         }
     }
 
-    for (size_t idx = 0; idx < sizeof(STRING_RESULT_COMMANDS) / sizeof(Command<std::string> ); ++idx)
+    for (size_t idx = 0; idx < STRING_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         Command<std::string> stringResultCmd = STRING_RESULT_COMMANDS[idx];
         if (cmd.compare(stringResultCmd.getCommand()) == 0)
@@ -77,7 +100,38 @@ std::string CommandParser::execute(std::string& unparsedCommand)
         }
     }
 
-    return "COMMAND NOT FOUND!";
+    return "COMMAND NOT VALID!";
+}
+
+/**
+ * Returns a list of commands supported by this interpreter.
+ */
+std::string CommandParser::getCommandList()
+{
+    std::string cmdList = "SUPPORTED COMMANDS:\n";
+
+    cmdList.append("\nRETURN STATUSES: \n");
+    for (size_t idx = 0; idx < STATUS_RESULT_COMMANDS_LIST_LENGTH; ++idx)
+    {
+        cmdList.append(STATUS_RESULT_COMMANDS[idx].getCommand());
+        cmdList.append("\n");
+    }
+
+    cmdList.append("\nRETURN STRINGS: \n");
+    for (size_t idx = 0; idx < STRING_RESULT_COMMANDS_LIST_LENGTH; ++idx)
+    {
+        cmdList.append(STRING_RESULT_COMMANDS[idx].getCommand());
+        cmdList.append("\n");
+    }
+
+    cmdList.append("\nRETURN UINT32: \n");
+    for (size_t idx = 0; idx < UINT32_RESULT_COMMANDS_LIST_LENGTH; ++idx)
+    {
+        cmdList.append(UINT32_RESULT_COMMANDS[idx].getCommand());
+        cmdList.append("\n");
+    }
+
+    return cmdList;
 }
 
 /**

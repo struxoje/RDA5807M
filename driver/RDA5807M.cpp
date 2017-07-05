@@ -59,6 +59,18 @@ std::string RDA5807M::statusResultToString(StatusResult toConvert)
     return STATUSRESULT_TO_STRING[static_cast<unsigned int>(toConvert)];
 }
 
+/**
+ * Resets the radio to a known state.
+ */
+void RDA5807M::reset()
+{
+    init();
+}
+
+/**
+ * Initializes the radio to a known state. This is done implicitly when an RDA5807M instance
+ * is constructed.
+ */
 void RDA5807M::init()
 {
     std::memcpy(registers, REGISTER_MAP_DEFAULT_STATE, REGISTER_MAP_SIZE_BYTES);
@@ -292,7 +304,7 @@ RDA5807M::StatusResult RDA5807M::setSeekMode(SeekMode seekMode, bool writeResult
 }
 
 /**
- * Enables RDS/RBDS if rdsEnables is true. Disables RDS/RBDS if rdsEnable
+ * Enables RDS/RBDS if rdsEnable is true. Disables RDS/RBDS if rdsEnable
  * is false.
  */
 RDA5807M::StatusResult RDA5807M::setRDSMode(bool rdsEnable, bool writeResultToDevice)
@@ -420,7 +432,7 @@ RDA5807M::StatusResult RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultTo
 
 RDA5807M::StatusResult RDA5807M::setAFCD(bool afcdEnable, bool writeResultToDevice)
 {
-    setRegister(REG_0x04, Util::boolToInteger(afcdEnable), AFCD);
+    setRegister(REG_0x04, Util::boolToInteger(!afcdEnable), AFCD);
 
     return conditionallyWriteRegisterToDevice(REG_0x04, writeResultToDevice);
 }
@@ -521,7 +533,8 @@ std::string RDA5807M::getStatusString()
 {
     std::string status{""};
     char buffer[100] = {0};
-    std::sprintf(buffer, "Read channel: %u\n", getReadChannel());
+
+    std::sprintf(buffer, "New RDS/RBDS group ready?: %s\n", isRdsReady() ? "Yes" : "No");
     status.append(buffer);
 
     std::sprintf(buffer, "Seek/Tune complete: %s\n", isStcComplete() ? "Complete" : "Not Complete");
@@ -570,5 +583,12 @@ RDA5807M::StatusResult RDA5807M::conditionallyWriteRegisterToDevice(Register reg
     {
         return StatusResult::SUCCESS;
     }
+}
+
+RDA5807M::StatusResult RDA5807M::setSoftBlend(bool softBlendEnable, bool writeResultToDevice)
+{
+    setRegister(REG_0x07, Util::boolToInteger(softBlendEnable), SOFTBLEND_EN);
+
+    return conditionallyWriteRegisterToDevice(REG_0x07, writeResultToDevice);
 }
 

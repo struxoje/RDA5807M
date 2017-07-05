@@ -15,13 +15,13 @@ public:
     // Public interface functions //
     ////////////////////////////////
     RadioResult(T resultParam) : result(resultParam){};
-    T getResult() { return result; }
+    T getResult() const { return result; }
 
 private:
     /////////////////////////////
     // Private Class Constants //
     /////////////////////////////
-    T result;
+    const T result;
 };
 
 #endif /* DRIVER_WRAPPER_RADIORESULT_HPP_ */

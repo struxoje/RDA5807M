@@ -34,6 +34,7 @@ private:
     // Private interface functions //
     /////////////////////////////////
     bool parse(const std::string& unparsedCommand, std::string& command, int& param);
+    std::string getCommandList();
 
     /////////////////////////////
     // Private class Constants //
@@ -43,6 +44,11 @@ private:
     static const Command<uint32_t> UINT32_RESULT_COMMANDS[];
     static const std::regex CMD_REGEX;
     static const int UNUSED_PARAM_VALUE = -1;
+    static const std::string LIST_CMDS_COMMAND_STRING;
+
+    static const size_t STATUS_RESULT_COMMANDS_LIST_LENGTH;
+    static const size_t STRING_RESULT_COMMANDS_LIST_LENGTH;
+    static const size_t UINT32_RESULT_COMMANDS_LIST_LENGTH;;
 
     //////////////////////////////
     // Private member variables //

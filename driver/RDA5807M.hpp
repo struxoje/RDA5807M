@@ -45,11 +45,11 @@ public:
         REG_0x0F = 0x0F
     };
 
-    enum SeekDirection {SEEK_UP, SEEK_DOWN};
-    enum SeekMode {WRAP_AT_LIMIT, STOP_AT_LIMIT};
-    enum Band {US_EUR, JAP, WORLD_WIDE, EAST_EUROPE};
-    enum ChannelSpacing {ONE_HUND_KHZ, TWO_HUND_KHZ, FIFTY_KHZ, TWENTY_FIVE_KHZ};
-    enum DeEmphasis {SEVENTY_FIVE_US, FIFTY_US};
+    enum SeekDirection {SEEK_UP = 0, SEEK_DOWN = 1};
+    enum SeekMode {WRAP_AT_LIMIT = 0, STOP_AT_LIMIT = 1};
+    enum Band {US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3};
+    enum ChannelSpacing {ONE_HUND_KHZ = 0, TWO_HUND_KHZ = 1, FIFTY_KHZ = 2, TWENTY_FIVE_KHZ = 3};
+    enum DeEmphasis {SEVENTY_FIVE_US = 0, FIFTY_US = 1};
 
     enum class StatusResult
     {
@@ -61,6 +61,8 @@ public:
     ////////////////////////////////
 
     RDA5807M();
+
+    void reset();
 
     // Updates the local register map, but DOES NOT WRITE the changes
     // to the device
@@ -112,6 +114,8 @@ public:
     StatusResult setAFCD(bool afcdEnable, bool writeResultToDevice = true);
 
     StatusResult setSoftMute(bool softMuteEnable, bool writeResultToDevice = true);
+
+    StatusResult setSoftBlend(bool softBlendEnable, bool writeResultToDevice = true);
 
     bool retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask);
 
@@ -207,9 +211,9 @@ private:
     /////////////////////////////////
     // Private interface functions //
     /////////////////////////////////
+    void init();
     StatusResult setI2cAddress(uint8_t addr);
     StatusResult conditionallyWriteRegisterToDevice(Register regToWrite, bool shouldWrite);
-    void init();
 
     //////////////////////////////
     // Private member variables //

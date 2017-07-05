@@ -7,6 +7,7 @@
 
 // System includes
 #include <string>
+#include <unistd.h>
 
 // Project includes
 #include "RadioResult.hpp"
@@ -66,9 +67,20 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setBassBoost(int bassBoostE
     return radio.setBassBoost(Util::boolFromInteger(bassBoostEnable));
 }
 
+/**
+ * Reinitializes the radio when radioEnable == 1
+ * Disables the radio when radioEnable == 0
+ */
 RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setRadioEnableState(int radioEnable)
 {
-    return radio.setEnabled(Util::boolFromInteger(radioEnable));
+    bool isEnableRequested = Util::boolFromInteger(radioEnable);
+
+    if (isEnableRequested)
+    {
+        radio.reset();
+    }
+
+    return radio.setEnabled(isEnableRequested);
 }
 
 RadioResult<std::string> RDA5807MWrapper::getStatusString(int UNUSED)
@@ -121,3 +133,61 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setTune(int tuneEnable)
 {
     return radio.setTune(Util::boolFromInteger(tuneEnable));
 }
+
+RadioResult<std::string> RDA5807MWrapper::generateFreqMap(int UNUSED)
+{
+    std::string results{""};
+    radio.setMute(true);
+    for (int freq = 880; freq <= 1080; freq+=1)
+    {
+        setFrequency(freq);
+        usleep(100*1000);
+
+        // Generate freq bars
+        uint8_t rssi = radio.getRssi();
+        char barBuff[129] = {0};
+        std::memset(barBuff, '|', rssi);
+        barBuff[rssi] = '\0';
+
+        char fullBuff[160] = {0};
+        std::sprintf(fullBuff, "Freq: %u\tRSSI: %s\n", freq, barBuff);
+        results.append(fullBuff);
+    }
+    return results;
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setAFCD(int afcdEnable)
+{
+    return radio.setAFCD(Util::boolFromInteger(afcdEnable));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setDeEmphasis(int deEmphasisSelector)
+{
+    return radio.setDeEmphasis(static_cast<RDA5807M::DeEmphasis>(deEmphasisSelector));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setBand(int bandSelector)
+{
+    return radio.setBand(static_cast<RDA5807M::Band>(bandSelector));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setChannelSpacing(int channelSpacingSelector)
+{
+    return radio.setChannelSpacing(static_cast<RDA5807M::ChannelSpacing>(channelSpacingSelector));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSeekDirection(int seekDirSelector)
+{
+    return radio.setSeekDirection(static_cast<RDA5807M::SeekDirection>(seekDirSelector));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSeekMode(int seekModeSelector)
+{
+    return radio.setSeekMode(static_cast<RDA5807M::SeekMode>(seekModeSelector));
+}
+
+RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSoftBlend(int softBlendEnable)
+{
+    return radio.setSoftBlend(Util::boolFromInteger(softBlendEnable));
+}
+

@@ -24,6 +24,7 @@ public:
     ////////////////////////////////
     RDA5807MWrapper(RDA5807M& radioParam) : radio(radioParam) { };
 
+    // RDA5807M::StatusResult-returning functions
     RadioResult<RDA5807M::StatusResult> setFrequency(int freq);
     RadioResult<RDA5807M::StatusResult> setVolume(int vol);
     RadioResult<RDA5807M::StatusResult> setMute(int muteEnable);
@@ -37,11 +38,18 @@ public:
     RadioResult<RDA5807M::StatusResult> setSoftReset(int softResetEnable);
     RadioResult<RDA5807M::StatusResult> setSoftMute(int softMuteEnable);
     RadioResult<RDA5807M::StatusResult> setTune(int tuneEnable);
+    RadioResult<RDA5807M::StatusResult> setAFCD(int afcdEnable);
+    RadioResult<RDA5807M::StatusResult> setDeEmphasis(int deEmphasisSelector);
+    RadioResult<RDA5807M::StatusResult> setBand(int bandSelector);
+    RadioResult<RDA5807M::StatusResult> setChannelSpacing(int channelSpacingSelector);
+    RadioResult<RDA5807M::StatusResult> setSeekDirection(int seekDirSelector);
+    RadioResult<RDA5807M::StatusResult> setSeekMode(int seekModeSelector);
+    RadioResult<RDA5807M::StatusResult> setSoftBlend(int softBlendEnable);
 
-
+    // std::string-returning functions
     RadioResult<std::string> getStatusString(int UNUSED);
     RadioResult<std::string> getRegisterMapString(int UNUSED);
-
+    RadioResult<std::string> generateFreqMap(int UNUSED);
 
 private:
     ///////////////////////////
