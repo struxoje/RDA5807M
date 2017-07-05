@@ -9,7 +9,6 @@
 #include <iostream>
 #include <regex>
 #include <string>
-#include <utility>
 
 // Project includes
 #include "Command.hpp"
@@ -58,7 +57,11 @@ const size_t CommandParser::STATUS_RESULT_COMMANDS_LIST_LENGTH = sizeof(STATUS_R
 const size_t CommandParser::STRING_RESULT_COMMANDS_LIST_LENGTH = sizeof(STRING_RESULT_COMMANDS) / sizeof(Command<std::string>);
 const size_t CommandParser::UINT32_RESULT_COMMANDS_LIST_LENGTH = sizeof(UINT32_RESULT_COMMANDS) / sizeof(Command<uint32_t>);
 
-
+/**
+ * The command specified by LIST_CMDS_COMMAND_STRING will result in a list of supported
+ * functions being printed. If the entered command is invalid, "COMMAND NOT VALID!" is returned.
+ * Otherwise, the result of the execution is returned.
+ */
 std::string CommandParser::execute(std::string& unparsedCommand)
 {
     std::string cmd;
@@ -77,13 +80,13 @@ std::string CommandParser::execute(std::string& unparsedCommand)
 
     if (cmd.compare(LIST_CMDS_COMMAND_STRING) == 0)
     {
-        return getCommandList();
+        return getCommandStringList();
     }
 
     for (size_t idx = 0; idx < STATUS_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         Command<RDA5807M::StatusResult> statusResultCmd = STATUS_RESULT_COMMANDS[idx];
-        if (cmd.compare(statusResultCmd.getCommand()) == 0)
+        if (cmd.compare(statusResultCmd.getCommandString()) == 0)
         {
             std::cout << "Executing: " << cmd << "; Param: " << param << std::endl;
             return RDA5807M::statusResultToString(statusResultCmd.exec(param, radioWrapper).getResult());
@@ -93,7 +96,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
     for (size_t idx = 0; idx < STRING_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         Command<std::string> stringResultCmd = STRING_RESULT_COMMANDS[idx];
-        if (cmd.compare(stringResultCmd.getCommand()) == 0)
+        if (cmd.compare(stringResultCmd.getCommandString()) == 0)
         {
             std::cout << "Executing: " << cmd << "; Param: " << param << std::endl;
             return stringResultCmd.exec(param, radioWrapper).getResult();
@@ -106,28 +109,28 @@ std::string CommandParser::execute(std::string& unparsedCommand)
 /**
  * Returns a list of commands supported by this interpreter.
  */
-std::string CommandParser::getCommandList()
+std::string CommandParser::getCommandStringList()
 {
     std::string cmdList = "SUPPORTED COMMANDS:\n";
 
     cmdList.append("\nRETURN STATUSES: \n");
     for (size_t idx = 0; idx < STATUS_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
-        cmdList.append(STATUS_RESULT_COMMANDS[idx].getCommand());
+        cmdList.append(STATUS_RESULT_COMMANDS[idx].getCommandString());
         cmdList.append("\n");
     }
 
     cmdList.append("\nRETURN STRINGS: \n");
     for (size_t idx = 0; idx < STRING_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
-        cmdList.append(STRING_RESULT_COMMANDS[idx].getCommand());
+        cmdList.append(STRING_RESULT_COMMANDS[idx].getCommandString());
         cmdList.append("\n");
     }
 
     cmdList.append("\nRETURN UINT32: \n");
     for (size_t idx = 0; idx < UINT32_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
-        cmdList.append(UINT32_RESULT_COMMANDS[idx].getCommand());
+        cmdList.append(UINT32_RESULT_COMMANDS[idx].getCommandString());
         cmdList.append("\n");
     }
 

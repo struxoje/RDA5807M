@@ -27,24 +27,29 @@ public:
     ////////////////////////////////
     // Public interface functions //
     ////////////////////////////////
-    Command(std::string commandParam, WrapperFunction cmdFuncParam) :
-            command(commandParam), cmdFunc(cmdFuncParam) {};
+    Command(std::string commandStringParam, WrapperFunction cmdFuncParam) :
+            commandString(commandStringParam), cmdFunc(cmdFuncParam) {};
 
+    /**
+     * Executes the function pointed to by cmdFunc with the parameter param.
+     * wrapRef is used as the object on which cmdFunc is called.
+     * The result of the function is returned
+     */
     RadioResult<T> exec(int param, RDA5807MWrapper& wrapRef) const
     {
         return (wrapRef.*cmdFunc)(param);
     }
 
-    std::string getCommand() const
+    std::string getCommandString() const
     {
-        return command;
+        return commandString;
     }
 
 private:
     //////////////////////////////
     // Private member variables //
     //////////////////////////////
-    const std::string command;
+    const std::string commandString;
     const WrapperFunction cmdFunc;
 
 };
