@@ -13,7 +13,6 @@
 // Project includes
 #include "Command.hpp"
 #include "CommandParser.hpp"
-#include "RadioResult.hpp"
 #include "RDA5807M.hpp"
 #include "RDA5807MWrapper.hpp"
 
@@ -88,7 +87,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
         if (cmd.compare(statusResultCmd.getCommandString()) == 0)
         {
             std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
-            return RDA5807M::statusResultToString(statusResultCmd.exec(param, radioWrapper).getResult());
+            return RDA5807M::statusResultToString(statusResultCmd.exec(param, radioWrapper));
         }
     }
 
@@ -98,7 +97,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
         if (cmd.compare(stringResultCmd.getCommandString()) == 0)
         {
             std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
-            return stringResultCmd.exec(param, radioWrapper).getResult();
+            return stringResultCmd.exec(param, radioWrapper);
         }
     }
 
@@ -108,7 +107,7 @@ std::string CommandParser::execute(std::string& unparsedCommand)
         if (cmd.compare(uintResultCmd.getCommandString()) == 0)
         {
             std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
-            return std::to_string(uintResultCmd.exec(param, radioWrapper).getResult());
+            return std::to_string(uintResultCmd.exec(param, radioWrapper));
         }
     }
 

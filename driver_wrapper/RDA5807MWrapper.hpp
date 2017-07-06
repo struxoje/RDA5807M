@@ -13,7 +13,6 @@
 #include <string>
 
 // Project Includes
-#include "RadioResult.hpp"
 #include "RDA5807M.hpp"
 
 class RDA5807MWrapper
@@ -25,34 +24,34 @@ public:
     RDA5807MWrapper(RDA5807M& radioParam) : radio(radioParam) { };
 
     // RDA5807M::StatusResult-returning functions
-    RadioResult<RDA5807M::StatusResult> setFrequency(int freq);
-    RadioResult<RDA5807M::StatusResult> setVolume(int vol);
-    RadioResult<RDA5807M::StatusResult> setMute(int muteEnable);
-    RadioResult<RDA5807M::StatusResult> setBassBoost(int bassBoostEnable);
-    RadioResult<RDA5807M::StatusResult> setRadioEnableState(int radioEnable);
-    RadioResult<RDA5807M::StatusResult> setHighImpedanceOutput(int highImpedanceOutputEnable);
-    RadioResult<RDA5807M::StatusResult> setStereo(int stereoEnable);
-    RadioResult<RDA5807M::StatusResult> setSeek(int seekEnable);
-    RadioResult<RDA5807M::StatusResult> setRDS(int rdsEnable);
-    RadioResult<RDA5807M::StatusResult> setNewMethod(int newMethodEnable);
-    RadioResult<RDA5807M::StatusResult> setSoftReset(int softResetEnable);
-    RadioResult<RDA5807M::StatusResult> setSoftMute(int softMuteEnable);
-    RadioResult<RDA5807M::StatusResult> setTune(int tuneEnable);
-    RadioResult<RDA5807M::StatusResult> setAFCD(int afcdEnable);
-    RadioResult<RDA5807M::StatusResult> setDeEmphasis(int deEmphasisSelector);
-    RadioResult<RDA5807M::StatusResult> setBand(int bandSelector);
-    RadioResult<RDA5807M::StatusResult> setChannelSpacing(int channelSpacingSelector);
-    RadioResult<RDA5807M::StatusResult> setSeekDirection(int seekDirSelector);
-    RadioResult<RDA5807M::StatusResult> setSeekMode(int seekModeSelector);
-    RadioResult<RDA5807M::StatusResult> setSoftBlend(int softBlendEnable);
+    RDA5807M::StatusResult setFrequency(int freq);
+    RDA5807M::StatusResult setVolume(int vol);
+    RDA5807M::StatusResult setMute(int muteEnable);
+    RDA5807M::StatusResult setBassBoost(int bassBoostEnable);
+    RDA5807M::StatusResult setRadioEnableState(int radioEnable);
+    RDA5807M::StatusResult setHighImpedanceOutput(int highImpedanceOutputEnable);
+    RDA5807M::StatusResult setStereo(int stereoEnable);
+    RDA5807M::StatusResult setSeek(int seekEnable);
+    RDA5807M::StatusResult setRDS(int rdsEnable);
+    RDA5807M::StatusResult setNewMethod(int newMethodEnable);
+    RDA5807M::StatusResult setSoftReset(int softResetEnable);
+    RDA5807M::StatusResult setSoftMute(int softMuteEnable);
+    RDA5807M::StatusResult setTune(int tuneEnable);
+    RDA5807M::StatusResult setAFCD(int afcdEnable);
+    RDA5807M::StatusResult setDeEmphasis(int deEmphasisSelector);
+    RDA5807M::StatusResult setBand(int bandSelector);
+    RDA5807M::StatusResult setChannelSpacing(int channelSpacingSelector);
+    RDA5807M::StatusResult setSeekDirection(int seekDirSelector);
+    RDA5807M::StatusResult setSeekMode(int seekModeSelector);
+    RDA5807M::StatusResult setSoftBlend(int softBlendEnable);
 
     // std::string-returning functions
-    RadioResult<std::string> getStatusString(int UNUSED);
-    RadioResult<std::string> getRegisterMapString(int UNUSED);
-    RadioResult<std::string> generateFreqMap(int UNUSED);
+    std::string getStatusString(int UNUSED);
+    std::string getRegisterMapString(int UNUSED);
+    std::string generateFreqMap(int UNUSED);
 
     // uint32_t-returning functions
-    RadioResult<uint32_t> getRssi(int UNUSED);
+    uint32_t getRssi(int UNUSED);
 
 private:
     /////////////////////////////

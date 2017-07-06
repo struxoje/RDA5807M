@@ -12,7 +12,6 @@
 #include <cstring>
 
 // Project includes
-#include "RadioResult.hpp"
 #include "RDA5807M.hpp"
 #include "RDA5807MWrapper.hpp"
 
@@ -22,7 +21,7 @@ class Command
 public:
 
     // Alias declarations to the rescue!
-    using WrapperFunction = RadioResult<T> (RDA5807MWrapper::*)(int);
+    using WrapperFunction = T (RDA5807MWrapper::*)(int);
 
     ////////////////////////////////
     // Public interface functions //
@@ -35,7 +34,7 @@ public:
      * wrapRef is used as the object on which cmdFunc is called.
      * The result of the function is returned
      */
-    RadioResult<T> exec(int param, RDA5807MWrapper& wrapRef) const
+    T exec(int param, RDA5807MWrapper& wrapRef) const
     {
         return (wrapRef.*cmdFunc)(param);
     }
