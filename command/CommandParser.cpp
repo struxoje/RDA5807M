@@ -49,7 +49,11 @@ const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
     Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap }
 };
 
-const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] = {};
+const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] =
+{
+    Command<uint32_t> { "RSSI", &RDA5807MWrapper::getRssi }
+};
+
 const size_t CommandParser::STATUS_RESULT_COMMANDS_LIST_LENGTH = sizeof(STATUS_RESULT_COMMANDS) / sizeof(Command<RDA5807M::StatusResult>);
 const size_t CommandParser::STRING_RESULT_COMMANDS_LIST_LENGTH = sizeof(STRING_RESULT_COMMANDS) / sizeof(Command<std::string>);
 const size_t CommandParser::UINT32_RESULT_COMMANDS_LIST_LENGTH = sizeof(UINT32_RESULT_COMMANDS) / sizeof(Command<uint32_t>);

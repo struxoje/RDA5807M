@@ -204,7 +204,7 @@ void RDA5807M::readDeviceRegistersAndStoreLocally()
 std::string RDA5807M::getRegisterMap()
 {
     char buffer[50] = {0};
-    std::string regMap{"\n _______________\n"};
+    std::string regMap{" _______________\n"};
 
     regMap.append("| REG  | VALUE  |\n");
 

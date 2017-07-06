@@ -45,7 +45,7 @@ int main()
         std::string line = "";
         std::getline(std::cin, line);
         std::string result = parser.execute(line);
-        std::cout << "Exec Result: " << result << std::endl;
+        std::cout << "Exec Result: \n" << result << std::endl;
         std::cout << "\n" << std::endl;
     }
 }

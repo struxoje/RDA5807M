@@ -51,6 +51,9 @@ public:
     RadioResult<std::string> getRegisterMapString(int UNUSED);
     RadioResult<std::string> generateFreqMap(int UNUSED);
 
+    // uint32_t-returning functions
+    RadioResult<uint32_t> getRssi(int UNUSED);
+
 private:
     /////////////////////////////
     // Private Class Constants //

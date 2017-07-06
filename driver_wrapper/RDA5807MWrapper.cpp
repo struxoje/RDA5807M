@@ -147,7 +147,7 @@ RadioResult<std::string> RDA5807MWrapper::generateFreqMap(int UNUSED)
     for (int freq = 880; freq <= 1080; freq+=1)
     {
         setFrequency(freq);
-        usleep(100*MICROS_IN_MILLIS);
+        usleep(125*MICROS_IN_MILLIS);
 
         // Generate freq bars
         uint8_t rssi = radio.getRssi();
@@ -195,5 +195,12 @@ RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSeekMode(int seekModeSel
 RadioResult<RDA5807M::StatusResult> RDA5807MWrapper::setSoftBlend(int softBlendEnable)
 {
     return radio.setSoftBlend(Util::boolFromInteger(softBlendEnable));
+}
+
+RadioResult<uint32_t> RDA5807MWrapper::getRssi(int UNUSED)
+{
+    (void) UNUSED;
+
+    return radio.getRssi();
 }
 
