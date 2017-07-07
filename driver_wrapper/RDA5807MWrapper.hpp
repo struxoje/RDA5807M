@@ -44,14 +44,28 @@ public:
     RDA5807M::StatusResult setSeekDirection(int seekDirSelector);
     RDA5807M::StatusResult setSeekMode(int seekModeSelector);
     RDA5807M::StatusResult setSoftBlend(int softBlendEnable);
+    RDA5807M::StatusResult updateLocalRegisterMapFromDevice(int UNUSED);
 
     // std::string-returning functions
     std::string getStatusString(int UNUSED);
     std::string getRegisterMapString(int UNUSED);
     std::string generateFreqMap(int UNUSED);
+    std::string getRdsInfoString(int UNUSED);
 
     // uint32_t-returning functions
     uint32_t getRssi(int UNUSED);
+
+    /**
+     * Use the UPDATELOCALREGS command before calling to pull in new
+     * RDS data. Note that if UPDATELOCALREGS is called between queries
+     * for RDS data, it'll probably be the case that the RDS data will
+     * change
+     */
+    uint32_t getRdsPiCode(int UNUSED);
+    uint32_t getRdsGroupTypeCode(int UNUSED);
+    uint32_t getRdsVersionCode(int UNUSED);
+    uint32_t getRdsTrafficProgramIdCode(int UNUSED);
+    uint32_t getRdsProgramTypeCode(int UNUSED);
 
 private:
     /////////////////////////////

@@ -173,6 +173,9 @@ RDA5807M::StatusResult RDA5807M::writeAllRegistersToDevice()
     return res;
 }
 
+/**
+ * Returns the content of the specified register from the device
+ */
 uint16_t RDA5807M::readRegisterFromDevice(Register reg)
 {
     uint16_t data = i2cInterface.readWordReg(static_cast<uint8_t>(reg));
@@ -186,6 +189,14 @@ uint16_t RDA5807M::readRegisterFromDevice(Register reg)
 //    std::printf("Read reg: 0x%02x; Value: 0x%04x\n", reg, data);
 
     return data;
+}
+
+/**
+ * Reads a single register from the device and updates its value in the local register map
+ */
+void RDA5807M::readAndStoreSingleRegisterFromDevice(Register reg)
+{
+    registers[reg] = readRegisterFromDevice(static_cast<Register>(reg));
 }
 
 void RDA5807M::readDeviceRegistersAndStoreLocally()
@@ -462,9 +473,9 @@ RDA5807M::StatusResult RDA5807M::setSoftMute(bool softMuteEnable, bool writeResu
     return conditionallyWriteRegisterToDevice(REG_0x04, writeResultToDevice);
 }
 
-bool RDA5807M::retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask)
+bool RDA5807M::readAndStoreRegFromDeviceAndReturnFlag(Register reg, uint16_t mask)
 {
-    registers[reg] = readRegisterFromDevice(reg);
+    readAndStoreSingleRegisterFromDevice(reg);
     uint16_t maskedValue = Util::valueFromReg(registers[reg], mask);
 
     if (maskedValue == 0)
@@ -479,32 +490,32 @@ bool RDA5807M::retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask)
 
 bool RDA5807M::isRdsReady()
 {
-    return retrieveUpdateRegAndReturnFlag(REG_0x0A, RDSR);
+    return readAndStoreRegFromDeviceAndReturnFlag(REG_0x0A, RDSR);
 }
 
 bool RDA5807M::isStcComplete()
 {
-    return retrieveUpdateRegAndReturnFlag(REG_0x0A, STC);
+    return readAndStoreRegFromDeviceAndReturnFlag(REG_0x0A, STC);
 }
 
 bool RDA5807M::didSeekFail()
 {
-    return retrieveUpdateRegAndReturnFlag(REG_0x0A, SF);
+    return readAndStoreRegFromDeviceAndReturnFlag(REG_0x0A, SF);
 }
 
 bool RDA5807M::isRdsDecoderSynchronized()
 {
-    return retrieveUpdateRegAndReturnFlag(REG_0x0A, RDSS);
+    return readAndStoreRegFromDeviceAndReturnFlag(REG_0x0A, RDSS);
 }
 
 bool RDA5807M::hasBlkEBeenFound()
 {
-    return retrieveUpdateRegAndReturnFlag(REG_0x0A, BLK_E);
+    return readAndStoreRegFromDeviceAndReturnFlag(REG_0x0A, BLK_E);
 }
 
 bool RDA5807M::isStereoEnabled()
 {
-    return retrieveUpdateRegAndReturnFlag(REG_0x0A, ST);
+    return readAndStoreRegFromDeviceAndReturnFlag(REG_0x0A, ST);
 }
 
 //TODO this depends on channel spacing!
@@ -521,57 +532,19 @@ uint16_t RDA5807M::getReadChannel()
 
 bool RDA5807M::isFmTrue()
 {
-    return retrieveUpdateRegAndReturnFlag(REG_0x0B, FM_TRUE);
+    return readAndStoreRegFromDeviceAndReturnFlag(REG_0x0B, FM_TRUE);
 }
 
 bool RDA5807M::isFmReady()
 {
-    return retrieveUpdateRegAndReturnFlag(REG_0x0B, FM_READY);
+    return readAndStoreRegFromDeviceAndReturnFlag(REG_0x0B, FM_READY);
 }
 
 uint8_t RDA5807M::getRssi()
 {
     registers[REG_0x0B] = readRegisterFromDevice(REG_0x0B);
     return static_cast<uint8_t>(Util::valueFromReg(registers[REG_0x0B],
-    RSSI));
-}
-
-std::string RDA5807M::getStatusString()
-{
-    std::string status{""};
-    char buffer[100] = {0};
-
-    std::sprintf(buffer, "New RDS/RBDS group ready?: %s\n", isRdsReady() ? "Yes" : "No");
-    status.append(buffer);
-
-    std::sprintf(buffer, "Seek/Tune complete: %s\n", isStcComplete() ? "Complete" : "Not Complete");
-    status.append(buffer);
-
-    std::sprintf(buffer, "Seek result: %s\n", didSeekFail() ? "Successful" : "Failure");
-    status.append(buffer);
-
-    std::sprintf(buffer, "RDS Sync'd?: %s\n", isRdsDecoderSynchronized() ? "Synchronized" : "Not synchronized");
-    status.append(buffer);
-
-    std::sprintf(buffer, "Has Block E been found?: %s\n", hasBlkEBeenFound() ? "Yes" : "No");
-    status.append(buffer);
-
-    std::sprintf(buffer, "Audio type: %s\n", isStereoEnabled() ? "Stereo" : "Mono");
-    status.append(buffer);
-
-    std::sprintf(buffer, "Read channel: %u\n", getReadChannel());
-    status.append(buffer);
-
-    std::sprintf(buffer, "RSSI: 0x%02x\n", getRssi());
-    status.append(buffer);
-
-    std::sprintf(buffer, "Is this freq a station?: %s\n", isFmTrue() ? "Yes" : "No");
-    status.append(buffer);
-
-    std::sprintf(buffer, "FM Ready?: %s\n", isFmReady() ? "Yes" : "No");
-    status.append(buffer);
-
-    return status;
+        RSSI));
 }
 
 /**
@@ -599,3 +572,48 @@ RDA5807M::StatusResult RDA5807M::setSoftBlend(bool softBlendEnable, bool writeRe
     return conditionallyWriteRegisterToDevice(REG_0x07, writeResultToDevice);
 }
 
+uint16_t RDA5807M::getRdsPiCode(bool readRegisterFromDevice)
+{
+    if (readRegisterFromDevice)
+    {
+        readAndStoreSingleRegisterFromDevice(BLOCK_A);
+    }
+    return registers[BLOCK_A];
+}
+
+uint8_t RDA5807M::getRdsGroupTypeCode(bool readRegisterFromDevice)
+{
+    if (readRegisterFromDevice)
+    {
+        readAndStoreSingleRegisterFromDevice(BLOCK_B);
+    }
+    return static_cast<uint8_t>(Util::valueFromReg(registers[BLOCK_B], GROUP_TYPE));
+}
+
+uint8_t RDA5807M::getRdsVersionCode(bool readRegisterFromDevice)
+{
+    if (readRegisterFromDevice)
+    {
+        readAndStoreSingleRegisterFromDevice(BLOCK_B);
+    }
+    return static_cast<uint8_t>(Util::valueFromReg(registers[BLOCK_B], VERSION_CODE));
+
+}
+
+uint8_t RDA5807M::getRdsTrafficProgramIdCode(bool readRegisterFromDevice)
+{
+    if (readRegisterFromDevice)
+    {
+        readAndStoreSingleRegisterFromDevice(BLOCK_B);
+    }
+    return static_cast<uint8_t>(Util::valueFromReg(registers[BLOCK_B], TRAFFIC_PROGRAM));
+}
+
+uint8_t RDA5807M::getRdsProgramTypeCode(bool readRegisterFromDevice)
+{
+    if (readRegisterFromDevice)
+    {
+        readAndStoreSingleRegisterFromDevice(BLOCK_B);
+    }
+    return static_cast<uint8_t>(Util::valueFromReg(registers[BLOCK_B], PROGRAM_TYPE));
+}

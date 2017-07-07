@@ -38,19 +38,28 @@ const Command<RDA5807M::StatusResult> CommandParser::STATUS_RESULT_COMMANDS[] =
     Command<RDA5807M::StatusResult> { "CHANNELSPACING", &RDA5807MWrapper::setChannelSpacing },
     Command<RDA5807M::StatusResult> { "SEEKDIR", &RDA5807MWrapper::setSeekDirection },
     Command<RDA5807M::StatusResult> { "SEEKMODE", &RDA5807MWrapper::setSeekMode },
-    Command<RDA5807M::StatusResult> { "SOFTBLEND", &RDA5807MWrapper::setSoftBlend }
+    Command<RDA5807M::StatusResult> { "SOFTBLEND", &RDA5807MWrapper::setSoftBlend },
+    Command<RDA5807M::StatusResult> { "UPDATELOCALREGS", &RDA5807MWrapper::updateLocalRegisterMapFromDevice }
 };
 
 const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
 {
     Command<std::string> { "STATUS", &RDA5807MWrapper::getStatusString },
     Command<std::string> { "REGMAP", &RDA5807MWrapper::getRegisterMapString },
-    Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap }
+    Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap },
+    Command<std::string> { "RDSINFO" , &RDA5807MWrapper::getRdsInfoString }
+
 };
 
 const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] =
 {
-    Command<uint32_t> { "RSSI", &RDA5807MWrapper::getRssi }
+    Command<uint32_t> { "RSSI", &RDA5807MWrapper::getRssi },
+    Command<uint32_t> { "RDSPI", &RDA5807MWrapper::getRdsPiCode },
+    Command<uint32_t> { "RDSGROUPTYPE", &RDA5807MWrapper::getRdsGroupTypeCode },
+    Command<uint32_t> { "RDSVERSION", &RDA5807MWrapper::getRdsVersionCode },
+    Command<uint32_t> { "RDSTRAFPROGRAMID", &RDA5807MWrapper::getRdsTrafficProgramIdCode },
+    Command<uint32_t> { "RDSPROGRAMTYPE", &RDA5807MWrapper::getRdsProgramTypeCode }
+
 };
 
 const size_t CommandParser::STATUS_RESULT_COMMANDS_LIST_LENGTH = sizeof(STATUS_RESULT_COMMANDS) / sizeof(Command<RDA5807M::StatusResult>);
@@ -121,14 +130,14 @@ std::string CommandParser::getCommandStringList()
 {
     std::string cmdList = "SUPPORTED COMMANDS:\n";
 
-    cmdList.append("\nRETURN STATUSES: \n");
+    cmdList.append("\nRETURN STATUS: \n");
     for (size_t idx = 0; idx < STATUS_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         cmdList.append(STATUS_RESULT_COMMANDS[idx].getCommandString());
         cmdList.append("\n");
     }
 
-    cmdList.append("\nRETURN STRINGS: \n");
+    cmdList.append("\nRETURN STRING: \n");
     for (size_t idx = 0; idx < STRING_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         cmdList.append(STRING_RESULT_COMMANDS[idx].getCommandString());

@@ -6,6 +6,7 @@
  */
 
 // System includes
+#include <cstring>
 #include <string>
 #include <unistd.h>
 
@@ -87,7 +88,41 @@ std::string RDA5807MWrapper::getStatusString(int UNUSED)
     (void) UNUSED;
 
     radio.readDeviceRegistersAndStoreLocally();
-    return radio.getStatusString();
+
+    std::string status{""};
+    char buffer[100] = {0};
+
+    std::sprintf(buffer, "New RDS/RBDS group ready?: %s\n", radio.isRdsReady() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Seek/Tune complete: %s\n", radio.isStcComplete() ? "Complete" : "Not Complete");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Seek result: %s\n", radio.didSeekFail() ? "Successful" : "Failure");
+    status.append(buffer);
+
+    std::sprintf(buffer, "RDS Sync'd?: %s\n", radio.isRdsDecoderSynchronized() ? "Synchronized" : "Not synchronized");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Has Block E been found?: %s\n", radio.hasBlkEBeenFound() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Audio type: %s\n", radio.isStereoEnabled() ? "Stereo" : "Mono");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Read channel: %u\n", radio.getReadChannel());
+    status.append(buffer);
+
+    std::sprintf(buffer, "RSSI: 0x%02x\n", radio.getRssi());
+    status.append(buffer);
+
+    std::sprintf(buffer, "Is this freq a station?: %s\n", radio.isFmTrue() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "FM Ready?: %s\n", radio.isFmReady() ? "Yes" : "No");
+    status.append(buffer);
+
+    return status;
 }
 
 std::string RDA5807MWrapper::getRegisterMapString(int UNUSED)
@@ -154,8 +189,8 @@ std::string RDA5807MWrapper::generateFreqMap(int UNUSED)
         std::memset(barBuff, '|', rssi);
         barBuff[rssi] = '\0';
 
-        char fullBuff[150] = {0};
-        std::sprintf(fullBuff, "Freq: %u\tRSSI: %s\n", freq, barBuff);
+        char fullBuff[160] = {0};
+        std::sprintf(fullBuff, "Freq: %u\tRSSI: %s %u\n", freq, barBuff, rssi);
         results.append(fullBuff);
     }
     return results;
@@ -203,3 +238,75 @@ uint32_t RDA5807MWrapper::getRssi(int UNUSED)
     return radio.getRssi();
 }
 
+uint32_t RDA5807MWrapper::getRdsPiCode(int UNUSED)
+{
+    (void) UNUSED;
+    return radio.getRdsPiCode();
+}
+
+uint32_t RDA5807MWrapper::getRdsGroupTypeCode(int UNUSED)
+{
+    (void) UNUSED;
+    return radio.getRdsGroupTypeCode();
+}
+
+uint32_t RDA5807MWrapper::getRdsVersionCode(int UNUSED)
+{
+    (void) UNUSED;
+    return radio.getRdsVersionCode();
+}
+
+uint32_t RDA5807MWrapper::getRdsTrafficProgramIdCode(int UNUSED)
+{
+    (void) UNUSED;
+    return radio.getRdsTrafficProgramIdCode();
+}
+
+uint32_t RDA5807MWrapper::getRdsProgramTypeCode(int UNUSED)
+{
+    (void) UNUSED;
+    return radio.getRdsProgramTypeCode();
+}
+
+RDA5807M::StatusResult RDA5807MWrapper::updateLocalRegisterMapFromDevice(int UNUSED)
+{
+    (void) UNUSED;
+    radio.readDeviceRegistersAndStoreLocally();
+    return RDA5807M::StatusResult::SUCCESS;
+}
+
+std::string RDA5807MWrapper::getRdsInfoString(int UNUSED)
+{
+    (void) UNUSED;
+
+    (void) UNUSED;
+
+    radio.readDeviceRegistersAndStoreLocally();
+
+    std::string status{""};
+    char buffer[120] = {0};
+
+    std::sprintf(buffer, "RDS Ready?: %s\n", radio.isRdsReady() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "RDS Decoder Synchronized?: %s\n", radio.isRdsDecoderSynchronized() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Block E Found?: %s\n", radio.hasBlkEBeenFound() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Program ID Code: 0x%04x\n", radio.getRdsTrafficProgramIdCode());
+    status.append(buffer);
+
+    std::sprintf(buffer, "Group Type: %02u%s\n", radio.getRdsGroupTypeCode(), radio.getRdsVersionCode() ? "B" : "A");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Traffic Program?: %s\n", radio.getRdsTrafficProgramIdCode() ? "Yes" : "No");
+    status.append(buffer);
+
+    std::sprintf(buffer, "Program Type?: 0x%02x\n", radio.getRdsProgramTypeCode());
+    status.append(buffer);
+
+    return status;
+
+}

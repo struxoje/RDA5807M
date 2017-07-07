@@ -39,10 +39,10 @@ public:
         REG_0x09 = 0x09,
         REG_0x0A = 0x0A,
         REG_0x0B = 0x0B,
-        REG_0x0C = 0x0C,
-        REG_0x0D = 0x0D,
-        REG_0x0E = 0x0E,
-        REG_0x0F = 0x0F
+        BLOCK_A = 0x0C,
+        BLOCK_B = 0x0D,
+        BLOCK_C = 0x0E,
+        BLOCK_D = 0x0F
     };
 
     enum SeekDirection {SEEK_UP = 0, SEEK_DOWN = 1};
@@ -73,6 +73,8 @@ public:
     StatusResult writeAllRegistersToDevice();
 
     void readDeviceRegistersAndStoreLocally();
+
+    void readAndStoreSingleRegisterFromDevice(Register reg);
 
     uint16_t readRegisterFromDevice(Register reg);
 
@@ -117,7 +119,7 @@ public:
 
     StatusResult setSoftBlend(bool softBlendEnable, bool writeResultToDevice = true);
 
-    bool retrieveUpdateRegAndReturnFlag(Register reg, uint16_t mask);
+    bool readAndStoreRegFromDeviceAndReturnFlag(Register reg, uint16_t mask);
 
     bool isRdsReady();
 
@@ -139,7 +141,12 @@ public:
 
     bool isFmReady();
 
-    std::string getStatusString();
+    // RDS functions
+    uint16_t getRdsPiCode(bool readRegisterFromDevice=false);
+    uint8_t getRdsGroupTypeCode(bool readRegisterFromDevice=false);
+    uint8_t getRdsVersionCode(bool readRegisterFromDevice=false);
+    uint8_t getRdsTrafficProgramIdCode(bool readRegisterFromDevice=false);
+    uint8_t getRdsProgramTypeCode(bool readRegisterFromDevice=false);
 
     std::string getRegisterMap();
 
