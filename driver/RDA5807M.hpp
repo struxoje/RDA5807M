@@ -93,7 +93,7 @@ public:
 
     StatusResult setSeekMode(SeekMode seekMode, bool writeResultToDevice = true);
 
-    StatusResult setRDSMode(bool rdsEnable, bool writeResultToDevice = true);
+    StatusResult setRdsMode(bool rdsEnable, bool writeResultToDevice = true);
 
     StatusResult setNewMethod(bool newMethodEnable, bool writeResultToDevice = true);
 

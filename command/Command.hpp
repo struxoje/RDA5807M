@@ -26,8 +26,8 @@ public:
     ////////////////////////////////
     // Public interface functions //
     ////////////////////////////////
-    Command(std::string commandStringParam, WrapperFunction cmdFuncParam) :
-            commandString(commandStringParam), cmdFunc(cmdFuncParam) {};
+    Command(std::string commandStringParam, WrapperFunction cmdFuncParam, std::string descriptionParam) :
+            commandString(commandStringParam), cmdFunc(cmdFuncParam), description(descriptionParam) {};
 
     /**
      * Executes the function pointed to by cmdFunc with the parameter param.
@@ -39,9 +39,14 @@ public:
         return (wrapRef.*cmdFunc)(param);
     }
 
-    std::string getCommandString() const
+    const std::string& getCommandString() const
     {
         return commandString;
+    }
+
+    const std::string& getCommandDescription() const
+    {
+        return description;
     }
 
 private:
@@ -50,6 +55,7 @@ private:
     //////////////////////////////
     const std::string commandString;
     const WrapperFunction cmdFunc;
+    const std::string description;
 
 };
 

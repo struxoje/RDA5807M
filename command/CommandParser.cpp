@@ -19,46 +19,46 @@
 // Static initialization
 const Command<RDA5807M::StatusResult> CommandParser::STATUS_RESULT_COMMANDS[] =
 {
-    Command<RDA5807M::StatusResult> { "FREQ", &RDA5807MWrapper::setFrequency },
-    Command<RDA5807M::StatusResult> { "VOL", &RDA5807MWrapper::setVolume },
-    Command<RDA5807M::StatusResult> { "MUTE", &RDA5807MWrapper::setMute },
-    Command<RDA5807M::StatusResult> { "BASSBOOST", &RDA5807MWrapper::setBassBoost },
-    Command<RDA5807M::StatusResult> { "ENABLE", &RDA5807MWrapper::setRadioEnableState },
-    Command<RDA5807M::StatusResult> { "HIGHIMPEDANCEOUTPUT", &RDA5807MWrapper::setHighImpedanceOutput },
-    Command<RDA5807M::StatusResult> { "STEREO", &RDA5807MWrapper::setStereo },
-    Command<RDA5807M::StatusResult> { "SEEK", &RDA5807MWrapper::setSeek },
-    Command<RDA5807M::StatusResult> { "RDS", &RDA5807MWrapper::setRDS },
-    Command<RDA5807M::StatusResult> { "NEWMETHOD", &RDA5807MWrapper::setNewMethod },
-    Command<RDA5807M::StatusResult> { "SOFTRESET", &RDA5807MWrapper::setSoftReset },
-    Command<RDA5807M::StatusResult> { "SOFTMUTE", &RDA5807MWrapper::setSoftMute },
-    Command<RDA5807M::StatusResult> { "TUNE", &RDA5807MWrapper::setTune },
-    Command<RDA5807M::StatusResult> { "AFCD", &RDA5807MWrapper::setAFCD },
-    Command<RDA5807M::StatusResult> { "DEEMPHASIS", &RDA5807MWrapper::setDeEmphasis },
-    Command<RDA5807M::StatusResult> { "BAND", &RDA5807MWrapper::setBand },
-    Command<RDA5807M::StatusResult> { "CHANNELSPACING", &RDA5807MWrapper::setChannelSpacing },
-    Command<RDA5807M::StatusResult> { "SEEKDIR", &RDA5807MWrapper::setSeekDirection },
-    Command<RDA5807M::StatusResult> { "SEEKMODE", &RDA5807MWrapper::setSeekMode },
-    Command<RDA5807M::StatusResult> { "SOFTBLEND", &RDA5807MWrapper::setSoftBlend },
-    Command<RDA5807M::StatusResult> { "UPDATELOCALREGS", &RDA5807MWrapper::updateLocalRegisterMapFromDevice }
+    Command<RDA5807M::StatusResult> { "FREQ", &RDA5807MWrapper::setFrequency, "Enter freq in as an integer"},
+    Command<RDA5807M::StatusResult> { "VOL", &RDA5807MWrapper::setVolume, "Enter volume from 0 to 15"},
+    Command<RDA5807M::StatusResult> { "MUTE", &RDA5807MWrapper::setMute, "1 to mute, 0 to unmute"},
+    Command<RDA5807M::StatusResult> { "BASSBOOST", &RDA5807MWrapper::setBassBoost, "1 to enable bass boost, 0 to disable"},
+    Command<RDA5807M::StatusResult> { "ENABLE", &RDA5807MWrapper::setRadioEnableState, "1 to enable/reset radio, 0 to disable"},
+    Command<RDA5807M::StatusResult> { "HIGHIMPEDANCEOUTPUT", &RDA5807MWrapper::setHighImpedanceOutput, "1 to enable HiZ output, 0 to disable. Unstable - avoid"},
+    Command<RDA5807M::StatusResult> { "STEREO", &RDA5807MWrapper::setStereo, "1 for stereo, 0 for mono"},
+    Command<RDA5807M::StatusResult> { "SEEK", &RDA5807MWrapper::setSeek, "1 to enable seeking, 0 to disable. If 1, other commands may cause seeking, so be sure to set back to 0"},
+    Command<RDA5807M::StatusResult> { "RDS", &RDA5807MWrapper::setRDS, "1 to enable RDS, 0 to disable"},
+    Command<RDA5807M::StatusResult> { "NEWMETHOD", &RDA5807MWrapper::setNewMethod, "1 to enable new demodulate method, 0 to disable. Strongly recommend using 1 permanently"},
+    Command<RDA5807M::StatusResult> { "SOFTRESET", &RDA5807MWrapper::setSoftReset, "Setting to 1 causes a soft reset"},
+    Command<RDA5807M::StatusResult> { "SOFTMUTE", &RDA5807MWrapper::setSoftMute, "1 to enable softmute, 0 to disable"},
+    Command<RDA5807M::StatusResult> { "TUNE", &RDA5807MWrapper::setTune, "1 to tune. Resets to 0 automatically after tune complete"},
+    Command<RDA5807M::StatusResult> { "AFCD", &RDA5807MWrapper::setAFCD, "1 toe enable automatic frequency control (AFC), 0 tod disable"},
+    Command<RDA5807M::StatusResult> { "DEEMPHASIS", &RDA5807MWrapper::setDeEmphasis, "SEVENTY_FIVE_US = 0, FIFTY_US = 1"},
+    Command<RDA5807M::StatusResult> { "BAND", &RDA5807MWrapper::setBand, "US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3"},
+    Command<RDA5807M::StatusResult> { "CHANNELSPACING", &RDA5807MWrapper::setChannelSpacing, "E_HUND_KHZ = 0, TWO_HUND_KHZ = 1, FIFTY_KHZ = 2, TWENTY_FIVE_KHZ = 3"},
+    Command<RDA5807M::StatusResult> { "SEEKDIR", &RDA5807MWrapper::setSeekDirection, "SEEK_UP = 0, SEEK_DOWN = 1"},
+    Command<RDA5807M::StatusResult> { "SEEKMODE", &RDA5807MWrapper::setSeekMode, "WRAP_AT_LIMIT = 0, STOP_AT_LIMIT = 1"},
+    Command<RDA5807M::StatusResult> { "SOFTBLEND", &RDA5807MWrapper::setSoftBlend, "1 to enable soft blend, 0 to disable" },
+    Command<RDA5807M::StatusResult> { "UPDATELOCALREGS", &RDA5807MWrapper::updateLocalRegisterMapFromDevice, "No param. Updates local regmap with regs from device"}
 };
 
 const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
 {
-    Command<std::string> { "STATUS", &RDA5807MWrapper::getStatusString },
-    Command<std::string> { "REGMAP", &RDA5807MWrapper::getRegisterMapString },
-    Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap },
-    Command<std::string> { "RDSINFO" , &RDA5807MWrapper::getRdsInfoString }
+    Command<std::string> { "STATUS", &RDA5807MWrapper::getStatusString, "No param. Prints status info"},
+    Command<std::string> { "REGMAP", &RDA5807MWrapper::getRegisterMapString, "No param. Prints local register map"},
+    Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap, "Prints dotplot of freqs and their RSSI. No param for short search. Param=1 shows RDS support (takes a long time)"},
+    Command<std::string> { "RDSINFO" , &RDA5807MWrapper::getRdsInfoString, "No param. Prints RDS information"}
 
 };
 
 const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] =
 {
-    Command<uint32_t> { "RSSI", &RDA5807MWrapper::getRssi },
-    Command<uint32_t> { "RDSPI", &RDA5807MWrapper::getRdsPiCode },
-    Command<uint32_t> { "RDSGROUPTYPE", &RDA5807MWrapper::getRdsGroupTypeCode },
-    Command<uint32_t> { "RDSVERSION", &RDA5807MWrapper::getRdsVersionCode },
-    Command<uint32_t> { "RDSTRAFPROGRAMID", &RDA5807MWrapper::getRdsTrafficProgramIdCode },
-    Command<uint32_t> { "RDSPROGRAMTYPE", &RDA5807MWrapper::getRdsProgramTypeCode }
+    Command<uint32_t> { "RSSI", &RDA5807MWrapper::getRssi, "No param. Prints the RSSI"},
+    Command<uint32_t> { "RDSPI", &RDA5807MWrapper::getRdsPiCode, "No param. Prints RDS program identification code"},
+    Command<uint32_t> { "RDSGROUPTYPE", &RDA5807MWrapper::getRdsGroupTypeCode, "No param. Prints RDS group type"},
+    Command<uint32_t> { "RDSVERSION", &RDA5807MWrapper::getRdsVersionCode, "No param. Prints RDS version code"},
+    Command<uint32_t> { "RDSTRAFPROGRAMID", &RDA5807MWrapper::getRdsTrafficProgramIdCode, "No param. Prints RDS traffic ID code"},
+    Command<uint32_t> { "RDSPROGRAMTYPE", &RDA5807MWrapper::getRdsProgramTypeCode, "No param. Prints RDS program type code"}
 
 };
 
@@ -134,6 +134,8 @@ std::string CommandParser::getCommandStringList()
     for (size_t idx = 0; idx < STATUS_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         cmdList.append(STATUS_RESULT_COMMANDS[idx].getCommandString());
+        cmdList.append(" - ");
+        cmdList.append(STATUS_RESULT_COMMANDS[idx].getCommandDescription());
         cmdList.append("\n");
     }
 
@@ -141,6 +143,8 @@ std::string CommandParser::getCommandStringList()
     for (size_t idx = 0; idx < STRING_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         cmdList.append(STRING_RESULT_COMMANDS[idx].getCommandString());
+        cmdList.append(" - ");
+        cmdList.append(STRING_RESULT_COMMANDS[idx].getCommandDescription());
         cmdList.append("\n");
     }
 
@@ -148,6 +152,8 @@ std::string CommandParser::getCommandStringList()
     for (size_t idx = 0; idx < UINT32_RESULT_COMMANDS_LIST_LENGTH; ++idx)
     {
         cmdList.append(UINT32_RESULT_COMMANDS[idx].getCommandString());
+        cmdList.append(" - ");
+        cmdList.append(UINT32_RESULT_COMMANDS[idx].getCommandDescription());
         cmdList.append("\n");
     }
 

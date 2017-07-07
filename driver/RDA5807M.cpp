@@ -76,7 +76,7 @@ void RDA5807M::init()
     std::memcpy(registers, REGISTER_MAP_DEFAULT_STATE, REGISTER_MAP_SIZE_BYTES);
     setMute(true, false);
     setHighImpedanceOutput(false, false);
-    setRDSMode(true, false);
+    setRdsMode(true, false);
     setSoftMute(false, false);
     setNewMethod(true, false); // KEEP ME ENABLED! Using new method offers a drastic performance reception improvement
     setVolume(0x00, false);
@@ -84,6 +84,7 @@ void RDA5807M::init()
     setBand(RDA5807M::Band::US_EUR, false);
     setTune(true, false);
     setEnabled(true, false);
+
     writeAllRegistersToDevice();
 }
 
@@ -325,7 +326,7 @@ RDA5807M::StatusResult RDA5807M::setSeekMode(SeekMode seekMode, bool writeResult
  * Enables RDS/RBDS if rdsEnable is true. Disables RDS/RBDS if rdsEnable
  * is false.
  */
-RDA5807M::StatusResult RDA5807M::setRDSMode(bool rdsEnable, bool writeResultToDevice)
+RDA5807M::StatusResult RDA5807M::setRdsMode(bool rdsEnable, bool writeResultToDevice)
 {
     setRegister(REG_0x02, Util::boolToInteger(rdsEnable), RDS_EN);
 

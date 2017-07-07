@@ -149,7 +149,7 @@ RDA5807M::StatusResult RDA5807MWrapper::setSeek(int seekEnable)
 
 RDA5807M::StatusResult RDA5807MWrapper::setRDS(int rdsEnable)
 {
-    return radio.setRDSMode(Util::boolFromInteger(rdsEnable));
+    return radio.setRdsMode(Util::boolFromInteger(rdsEnable));
 }
 
 RDA5807M::StatusResult RDA5807MWrapper::setNewMethod(int newMethodEnable)
@@ -172,16 +172,26 @@ RDA5807M::StatusResult RDA5807MWrapper::setTune(int tuneEnable)
     return radio.setTune(Util::boolFromInteger(tuneEnable));
 }
 
-std::string RDA5807MWrapper::generateFreqMap(int UNUSED)
+/**
+ * If the param is 1, then the function will
+ * search for RDS (long mode). Otherwise, no RDS info is shown.
+ */
+std::string RDA5807MWrapper::generateFreqMap(int length)
 {
-    (void) UNUSED;
 
     std::string results{""};
     radio.setMute(true);
     for (int freq = 880; freq <= 1080; freq+=1)
     {
         setFrequency(freq);
-        usleep(125*MICROS_IN_MILLIS);
+        if (length == 1)
+        {
+            usleep(1000*MICROS_IN_MILLIS);
+        }
+        else
+        {
+            usleep(120*MICROS_IN_MILLIS);
+        }
 
         // Generate freq bars
         uint8_t rssi = radio.getRssi();
@@ -190,7 +200,14 @@ std::string RDA5807MWrapper::generateFreqMap(int UNUSED)
         barBuff[rssi] = '\0';
 
         char fullBuff[160] = {0};
-        std::sprintf(fullBuff, "Freq: %u\tRSSI: %s %u\n", freq, barBuff, rssi);
+        if (length == 1)
+        {
+            std::sprintf(fullBuff, "Freq: %04u  RDS: %s  RSSI(%03u): %s\n", freq, radio.isRdsDecoderSynchronized() ? "Y" : "N", rssi, barBuff);
+        }
+        else
+        {
+            std::sprintf(fullBuff, "Freq: %04u RSSI(%03u): %s\n", freq, rssi, barBuff);
+        }
         results.append(fullBuff);
     }
     return results;
@@ -286,7 +303,7 @@ std::string RDA5807MWrapper::getRdsInfoString(int UNUSED)
     std::string status{""};
     char buffer[120] = {0};
 
-    std::sprintf(buffer, "RDS Ready?: %s\n", radio.isRdsReady() ? "Yes" : "No");
+    std::sprintf(buffer, "New RDS/RBDS Group Ready?: %s\n", radio.isRdsReady() ? "Yes" : "No");
     status.append(buffer);
 
     std::sprintf(buffer, "RDS Decoder Synchronized?: %s\n", radio.isRdsDecoderSynchronized() ? "Yes" : "No");
@@ -304,7 +321,7 @@ std::string RDA5807MWrapper::getRdsInfoString(int UNUSED)
     std::sprintf(buffer, "Traffic Program?: %s\n", radio.getRdsTrafficProgramIdCode() ? "Yes" : "No");
     status.append(buffer);
 
-    std::sprintf(buffer, "Program Type?: 0x%02x\n", radio.getRdsProgramTypeCode());
+    std::sprintf(buffer, "Program Type?: %02u\n", radio.getRdsProgramTypeCode());
     status.append(buffer);
 
     return status;
