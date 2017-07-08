@@ -12,6 +12,7 @@
 
 // Project includes
 #include "RDA5807M.hpp"
+#include "RDA5807MRegDefines.hpp"
 #include "RDA5807MWrapper.hpp"
 #include "Util.hpp"
 
@@ -301,7 +302,7 @@ std::string RDA5807MWrapper::getRdsInfoString(int UNUSED)
     radio.readDeviceRegistersAndStoreLocally();
 
     std::string status{""};
-    char buffer[120] = {0};
+    char buffer[150] = {0};
 
     std::sprintf(buffer, "New RDS/RBDS Group Ready?: %s\n", radio.isRdsReady() ? "Yes" : "No");
     status.append(buffer);
@@ -324,6 +325,29 @@ std::string RDA5807MWrapper::getRdsInfoString(int UNUSED)
     std::sprintf(buffer, "Program Type?: %02u\n", radio.getRdsProgramTypeCode());
     status.append(buffer);
 
+    std::sprintf(buffer, "Block A Register: 0x%04x\n", radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_A));
+    status.append(buffer);
+
+    std::sprintf(buffer, "Block B Register: 0x%04x\n", radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_B));
+    status.append(buffer);
+
+    std::sprintf(buffer, "Block C Register: 0x%04x (%c%c)\n", radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_C),
+                Util::valueFromReg(radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_C), UINT16_UPPER_BYTE),
+                Util::valueFromReg(radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_C), UINT16_LOWER_BYTE));
+    status.append(buffer);
+
+    std::sprintf(buffer, "Block D Register: 0x%04x (%c%c)\n", radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_D),
+            Util::valueFromReg(radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_D), UINT16_UPPER_BYTE),
+            Util::valueFromReg(radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_D), UINT16_LOWER_BYTE));
+    status.append(buffer);
     return status;
 
 }
+
+std::string RDA5807MWrapper::getLocalCopyOfReg(int reg)
+{
+    char buff[10] = {0};
+    std::sprintf(buff, "0x%04x", radio.getLocalRegisterContent(static_cast<RDA5807M::Register>(reg)));
+    return buff;
+}
+

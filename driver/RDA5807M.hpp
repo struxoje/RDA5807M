@@ -78,6 +78,8 @@ public:
 
     uint16_t readRegisterFromDevice(Register reg);
 
+    uint16_t getLocalRegisterContent(Register reg);
+
     // FUNCTIONS USED TO ENABLE/DISABLE RADIO MODES
     StatusResult setMute(bool muteEnable, bool writeResultToDevice = true);
 

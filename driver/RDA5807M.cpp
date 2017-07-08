@@ -78,6 +78,7 @@ void RDA5807M::init()
     setHighImpedanceOutput(false, false);
     setRdsMode(true, false);
     setSoftMute(false, false);
+    setStereo(true, false);
     setNewMethod(true, false); // KEEP ME ENABLED! Using new method offers a drastic performance reception improvement
     setVolume(0x00, false);
     setChannelSpacing(RDA5807M::ChannelSpacing::ONE_HUND_KHZ, false);
@@ -618,3 +619,13 @@ uint8_t RDA5807M::getRdsProgramTypeCode(bool readRegisterFromDevice)
     }
     return static_cast<uint8_t>(Util::valueFromReg(registers[BLOCK_B], PROGRAM_TYPE));
 }
+
+/**
+ * Returns the content of the *LOCALLY STORED* register
+ * specified by reg
+ */
+uint16_t RDA5807M::getLocalRegisterContent(Register reg)
+{
+    return registers[reg];
+}
+

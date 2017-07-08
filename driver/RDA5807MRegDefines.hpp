@@ -106,6 +106,12 @@
 #define TRAFFIC_PROGRAM 0x0400
 #define PROGRAM_TYPE    0x03E0
 
+/**
+ * General masks
+ */
+#define UINT16_UPPER_BYTE   0xFF00
+#define UINT16_LOWER_BYTE   0x00FF
+
 
 
 #endif // ifndef RDA5807MREGDEFINES_HPP

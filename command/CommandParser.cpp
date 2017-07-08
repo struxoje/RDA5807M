@@ -47,8 +47,8 @@ const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
     Command<std::string> { "STATUS", &RDA5807MWrapper::getStatusString, "No param. Prints status info"},
     Command<std::string> { "REGMAP", &RDA5807MWrapper::getRegisterMapString, "No param. Prints local register map"},
     Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap, "Prints dotplot of freqs and their RSSI. No param for short search. Param=1 shows RDS support (takes a long time)"},
-    Command<std::string> { "RDSINFO" , &RDA5807MWrapper::getRdsInfoString, "No param. Prints RDS information"}
-
+    Command<std::string> { "RDSINFO" , &RDA5807MWrapper::getRdsInfoString, "No param. Prints RDS information"},
+    Command<std::string> { "GETREGFROMLOCALMAP", &RDA5807MWrapper::getLocalCopyOfReg, "Returns the local copy of the register addressed by the param (in hex)"}
 };
 
 const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] =
@@ -59,7 +59,6 @@ const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] =
     Command<uint32_t> { "RDSVERSION", &RDA5807MWrapper::getRdsVersionCode, "No param. Prints RDS version code"},
     Command<uint32_t> { "RDSTRAFPROGRAMID", &RDA5807MWrapper::getRdsTrafficProgramIdCode, "No param. Prints RDS traffic ID code"},
     Command<uint32_t> { "RDSPROGRAMTYPE", &RDA5807MWrapper::getRdsProgramTypeCode, "No param. Prints RDS program type code"}
-
 };
 
 const size_t CommandParser::STATUS_RESULT_COMMANDS_LIST_LENGTH = sizeof(STATUS_RESULT_COMMANDS) / sizeof(Command<RDA5807M::StatusResult>);
