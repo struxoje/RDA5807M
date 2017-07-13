@@ -130,7 +130,7 @@ void RDA5807M::setRegister(Register regNum, uint16_t value, uint16_t mask)
     // region in regTemp, but won't impact any other bits in regTemp
     regTemp |= maskAndValue;
 
-    // Viola!
+    // Voila!
     registers[regNum] = regTemp;
 }
 
