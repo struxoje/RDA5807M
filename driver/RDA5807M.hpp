@@ -50,6 +50,7 @@ public:
     enum Band {US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3};
     enum ChannelSpacing {ONE_HUND_KHZ = 0, TWO_HUND_KHZ = 1, FIFTY_KHZ = 2, TWENTY_FIVE_KHZ = 3};
     enum DeEmphasis {SEVENTY_FIVE_US = 0, FIFTY_US = 1};
+    enum RdsBlockErrors {ZERO_ERRORS = 0, ONE_TO_TWO_ERRORS = 1, THREE_TO_FIVE_ERRORS = 2, SIX_OR_MORE_ERRORS = 3};
 
     enum class StatusResult
     {
@@ -149,10 +150,12 @@ public:
     uint8_t getRdsVersionCode(bool readRegisterFromDevice=false);
     uint8_t getRdsTrafficProgramIdCode(bool readRegisterFromDevice=false);
     uint8_t getRdsProgramTypeCode(bool readRegisterFromDevice=false);
+    RdsBlockErrors getRdsErrorsForBlock(Register block);
 
     std::string getRegisterMap();
 
     static std::string statusResultToString(StatusResult toConvert);
+    static std::string rdsBlockErrorToString(RdsBlockErrors toConvert);
 
 private:
     /////////////////////////////
@@ -216,6 +219,8 @@ private:
 
     // String values for the StatusResult enum
     static const std::string STATUSRESULT_TO_STRING[];
+
+    static const std::string BLOCK_ERRORS_TO_STRING[];
 
     /////////////////////////////////
     // Private interface functions //

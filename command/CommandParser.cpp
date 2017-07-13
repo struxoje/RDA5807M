@@ -48,7 +48,8 @@ const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
     Command<std::string> { "REGMAP", &RDA5807MWrapper::getRegisterMapString, "No param. Prints local register map"},
     Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap, "Prints dotplot of freqs and their RSSI. No param for short search. Param=1 shows RDS support (takes a long time)"},
     Command<std::string> { "RDSINFO" , &RDA5807MWrapper::getRdsInfoString, "No param. Prints RDS information"},
-    Command<std::string> { "GETREGFROMLOCALMAP", &RDA5807MWrapper::getLocalCopyOfReg, "Returns the local copy of the register addressed by the param (in hex)"}
+    Command<std::string> { "GETREGFROMLOCALMAP", &RDA5807MWrapper::getLocalCopyOfReg, "Returns the local copy of the register addressed by the param (in hex)"},
+    Command<std::string> { "SNOOPRDSGROUP2", &RDA5807MWrapper::snoopRdsGroupTwo, "Snoops RDS group 2 for param (in ms) milliseconds at 10ms intervals"}
 };
 
 const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] =

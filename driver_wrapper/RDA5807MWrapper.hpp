@@ -52,7 +52,7 @@ public:
     std::string generateFreqMap(int UNUSED);
     std::string getRdsInfoString(int UNUSED);
     std::string getLocalCopyOfReg(int reg);
-
+    std::string snoopRdsGroupTwo(int ms);
 
     // uint32_t-returning functions
     uint32_t getRssi(int UNUSED);

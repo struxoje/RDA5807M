@@ -187,6 +187,8 @@ std::string RDA5807MWrapper::generateFreqMap(int length)
         setFrequency(freq);
         if (length == 1)
         {
+            radio.setRdsMode(false);
+            radio.setRdsMode(true);
             usleep(1000*MICROS_IN_MILLIS);
         }
         else
@@ -297,12 +299,10 @@ std::string RDA5807MWrapper::getRdsInfoString(int UNUSED)
 {
     (void) UNUSED;
 
-    (void) UNUSED;
-
     radio.readDeviceRegistersAndStoreLocally();
 
     std::string status{""};
-    char buffer[150] = {0};
+    char buffer[350] = {0};
 
     std::sprintf(buffer, "New RDS/RBDS Group Ready?: %s\n", radio.isRdsReady() ? "Yes" : "No");
     status.append(buffer);
@@ -328,7 +328,13 @@ std::string RDA5807MWrapper::getRdsInfoString(int UNUSED)
     std::sprintf(buffer, "Block A Register: 0x%04x\n", radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_A));
     status.append(buffer);
 
+    std::sprintf(buffer, "Errors on Block A: %s\n", radio.rdsBlockErrorToString(radio.getRdsErrorsForBlock(RDA5807M::Register::BLOCK_A)).c_str());
+    status.append(buffer);
+
     std::sprintf(buffer, "Block B Register: 0x%04x\n", radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_B));
+    status.append(buffer);
+
+    std::sprintf(buffer, "Errors on Block B: %s\n", radio.rdsBlockErrorToString(radio.getRdsErrorsForBlock(RDA5807M::Register::BLOCK_B)).c_str());
     status.append(buffer);
 
     std::sprintf(buffer, "Block C Register: 0x%04x (%c%c)\n", radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_C),
@@ -349,5 +355,39 @@ std::string RDA5807MWrapper::getLocalCopyOfReg(int reg)
     char buff[10] = {0};
     std::sprintf(buff, "0x%04x", radio.getLocalRegisterContent(static_cast<RDA5807M::Register>(reg)));
     return buff;
+}
+
+/**
+ * Prints the contents block C and D registers when they contain group 2 data.
+ * The process runs for ms milliseconds.
+ * The RDS registers are queried approximately every 10 ms.
+ */
+std::string RDA5807MWrapper::snoopRdsGroupTwo(int ms)
+{
+    const uint8_t msToWait = 10;
+    int numRetries = ms/msToWait;
+
+    char charBuff[15] = {};
+    std::string strBuff;
+    for (int retryIdx = 0; retryIdx < numRetries; ++retryIdx)
+    {
+        radio.readDeviceRegistersAndStoreLocally();
+        if (radio.isRdsDecoderSynchronized() && radio.getRdsGroupTypeCode() == 2)
+        {
+            sprintf(charBuff, "%c%c%c%c",
+                    Util::valueFromReg(radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_C), UINT16_UPPER_BYTE),
+                    Util::valueFromReg(radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_C), UINT16_LOWER_BYTE),
+                    Util::valueFromReg(radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_D), UINT16_UPPER_BYTE),
+                    Util::valueFromReg(radio.getLocalRegisterContent(RDA5807M::Register::BLOCK_D), UINT16_LOWER_BYTE));
+            strBuff += charBuff;
+
+            // Toggle RDS. This clears the synchronized flag
+            radio.setRdsMode(false);
+            radio.setRdsMode(true);
+        }
+        usleep(msToWait * MICROS_IN_MILLIS);
+    }
+
+    return strBuff;
 }
 

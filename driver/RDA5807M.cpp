@@ -36,7 +36,7 @@ const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] = {
 
 const uint16_t RDA5807M::CHAN_SELECT_BASES[] = {870, 870, 760, 650};
 const std::string RDA5807M::STATUSRESULT_TO_STRING[] = { "SUCCESS", "ABOVE_MAX", "BELOW_MIN", "GENERAL_FAILURE", "I2C_FAILURE" };
-
+const std::string RDA5807M::BLOCK_ERRORS_TO_STRING[] = { "ZERO_ERRORS", "ONE_TO_TWO_ERRORS", "THREE_TO_FIVE_ERRORS", "SIX_OR_MORE_ERRORS"};
 
 RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
 {
@@ -57,6 +57,14 @@ RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
 std::string RDA5807M::statusResultToString(StatusResult toConvert)
 {
     return STATUSRESULT_TO_STRING[static_cast<unsigned int>(toConvert)];
+}
+
+/**
+ * Returns the string value of the result parameter
+ */
+std::string RDA5807M::rdsBlockErrorToString(RdsBlockErrors toConvert)
+{
+    return BLOCK_ERRORS_TO_STRING[toConvert];
 }
 
 /**
@@ -628,4 +636,28 @@ uint16_t RDA5807M::getLocalRegisterContent(Register reg)
 {
     return registers[reg];
 }
+
+/**
+ * Returns the number of errors on the RDS block specified as the param.
+ * DOES NOT FETCH THE REGISTERS FROM THE DEVICE! Only works off of local register copies.
+ * Only valid for BLOCK_A or BLOCK_B params
+ */
+RDA5807M::RdsBlockErrors RDA5807M::getRdsErrorsForBlock(Register block)
+{
+    if (block == BLOCK_A)
+    {
+        return static_cast<RdsBlockErrors>(Util::valueFromReg(registers[block], BLERA));
+    }
+    else if (block == BLOCK_B)
+    {
+        return static_cast<RdsBlockErrors>(Util::valueFromReg(registers[block], BLERB));
+    }
+    // Return SIX_OR_MORE_ERRORS in the event that an invalid
+    // registers is passed as a param
+    else
+    {
+        return SIX_OR_MORE_ERRORS;
+    }
+}
+
 
