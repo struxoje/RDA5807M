@@ -66,7 +66,7 @@ const size_t CommandParser::STATUS_RESULT_COMMANDS_LIST_LENGTH = sizeof(STATUS_R
 const size_t CommandParser::STRING_RESULT_COMMANDS_LIST_LENGTH = sizeof(STRING_RESULT_COMMANDS) / sizeof(Command<std::string>);
 const size_t CommandParser::UINT32_RESULT_COMMANDS_LIST_LENGTH = sizeof(UINT32_RESULT_COMMANDS) / sizeof(Command<uint32_t>);
 
-const std::regex CommandParser::CMD_REGEX { "^([a-zA-Z]+){1}=*([0-9]*)"};
+const std::regex CommandParser::CMD_REGEX { "^([a-zA-Z0-9]+){1}=*([0-9]*)"};
 const std::string CommandParser::LIST_CMDS_COMMAND_STRING = "HELP";
 
 /**
