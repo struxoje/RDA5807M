@@ -35,8 +35,6 @@ int main()
     sigfillset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
 
-    sleep(1);
-
     RDA5807MWrapper wrapper { radio };
     CommandParser parser { wrapper };
 

@@ -34,11 +34,12 @@ const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] = {
         /* Reg 0x0E */0x0000,
         /* Reg 0x0F */0x0000 };
 
-const uint16_t RDA5807M::CHAN_SELECT_BASES[] = {870, 870, 760, 650};
 const std::string RDA5807M::STATUSRESULT_TO_STRING[] = { "SUCCESS", "ABOVE_MAX", "BELOW_MIN", "GENERAL_FAILURE", "I2C_FAILURE" };
 const std::string RDA5807M::BLOCK_ERRORS_TO_STRING[] = { "ZERO_ERRORS", "ONE_TO_TWO_ERRORS", "THREE_TO_FIVE_ERRORS", "SIX_OR_MORE_ERRORS"};
+const uint16_t RDA5807M::FREQUENCY_RANGE_MIN[] = {870, 760, 760, 650};
+const uint16_t RDA5807M::FREQUENCY_RANGE_MAX[] = {1080, 910, 1080, 760};
 
-RDA5807M::RDA5807M() : i2cInterface(mraa::I2c(0, true))
+RDA5807M::RDA5807M() : band(US_EUR), i2cInterface(mraa::I2c(0, true))
 {
     // Reset the local register map
     std::memcpy(registers, REGISTER_MAP_DEFAULT_STATE, REGISTER_MAP_SIZE_BYTES);
@@ -90,7 +91,7 @@ void RDA5807M::init()
     setNewMethod(true, false); // KEEP ME ENABLED! Using new method offers a drastic performance reception improvement
     setVolume(0x00, false);
     setChannelSpacing(RDA5807M::ChannelSpacing::ONE_HUND_KHZ, false);
-    setBand(RDA5807M::Band::US_EUR, false);
+    setBand(band, false);
     setTune(true, false);
     setEnabled(true, false);
 
@@ -381,7 +382,7 @@ RDA5807M::StatusResult RDA5807M::setEnabled(bool enable, bool writeResultToDevic
 // must be in terms of 10f - that is, 985 for 98.5MHz, for example
 RDA5807M::StatusResult RDA5807M::setChannel(uint16_t channel, bool writeResultToDevice)
 {
-    uint16_t chan = channel - CHAN_SELECT_BASES[US_EUR_BAND_SELECT];
+    uint16_t chan = channel - FREQUENCY_RANGE_MIN[US_EUR_BAND_SELECT];
     setRegister(REG_0x03, chan, CHAN);
 
     return conditionallyWriteRegisterToDevice(REG_0x03, writeResultToDevice);
@@ -413,6 +414,8 @@ RDA5807M::StatusResult RDA5807M::setBand(Band band, bool writeResultToDevice)
             break;
     }
     setRegister(REG_0x03, bandBits, BAND);
+
+    this->band = static_cast<Band>(bandBits);
 
     return conditionallyWriteRegisterToDevice(REG_0x03, writeResultToDevice);
 }
@@ -537,7 +540,7 @@ uint16_t RDA5807M::getReadChannel()
 
     uint16_t readChannel = Util::valueFromReg(registers[REG_0x0A], READCHAN);
 
-    return (readChannel + CHAN_SELECT_BASES[US_EUR_BAND_SELECT]);
+    return (readChannel + FREQUENCY_RANGE_MIN[US_EUR_BAND_SELECT]);
 }
 
 bool RDA5807M::isFmTrue()
@@ -658,6 +661,26 @@ RDA5807M::RdsBlockErrors RDA5807M::getRdsErrorsForBlock(Register block)
     {
         return SIX_OR_MORE_ERRORS;
     }
+}
+
+/**
+ * Returns the currently selected band (stored as an internal member,
+ * not read from the radio).
+ */
+RDA5807M::Band RDA5807M::getBand()
+{
+    return band;
+}
+
+uint16_t RDA5807M::getBandMinumumFrequency()
+{
+    return FREQUENCY_RANGE_MIN[band];
+}
+
+uint16_t RDA5807M::getBandMaximumFrequency()
+{
+    return FREQUENCY_RANGE_MAX[band];
+
 }
 
 

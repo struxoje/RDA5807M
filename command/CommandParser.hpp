@@ -54,7 +54,7 @@ private:
     // Lengths, in terms of the number of elements, in the different command lists
     static const size_t STATUS_RESULT_COMMANDS_LIST_LENGTH;
     static const size_t STRING_RESULT_COMMANDS_LIST_LENGTH;
-    static const size_t UINT32_RESULT_COMMANDS_LIST_LENGTH;;
+    static const size_t UINT32_RESULT_COMMANDS_LIST_LENGTH;
 
     //////////////////////////////
     // Private member variables //

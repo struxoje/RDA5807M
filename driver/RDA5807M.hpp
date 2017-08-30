@@ -157,6 +157,10 @@ public:
     static std::string statusResultToString(StatusResult toConvert);
     static std::string rdsBlockErrorToString(RdsBlockErrors toConvert);
 
+    Band getBand();
+    uint16_t getBandMinumumFrequency();
+    uint16_t getBandMaximumFrequency();
+
 private:
     /////////////////////////////
     // Private class Constants //
@@ -211,16 +215,16 @@ private:
     static const uint8_t DEEMP_75_US = 0x00;
     static const uint8_t DEEMP_50_US = 0x01;
 
-    // Channel select base freq
-    // The indices to this array are band selection IDs 0-3
-    // The values of this array represent frequencies in MHz,
-    // where 870 = 87.0 MHz
-    static const uint16_t CHAN_SELECT_BASES[];
-
     // String values for the StatusResult enum
     static const std::string STATUSRESULT_TO_STRING[];
 
     static const std::string BLOCK_ERRORS_TO_STRING[];
+
+    // The indices to this array are band selection IDs 0-3
+    // The values of this array represent frequencies in MHz,
+    // where 870 = 87.0 MHz
+    static const uint16_t FREQUENCY_RANGE_MIN[];
+    static const uint16_t FREQUENCY_RANGE_MAX[];
 
     /////////////////////////////////
     // Private interface functions //
@@ -236,6 +240,9 @@ private:
     // The register map of the device. The first register is 0x00
     // and the last is 0x0F. Each register is two bytes (16 bits)
     uint16_t registers[0x0F];
+
+    // The current band (freq range)
+    Band band;
 
     // The I2c interface used to talk to the radio
     mraa::I2c i2cInterface;

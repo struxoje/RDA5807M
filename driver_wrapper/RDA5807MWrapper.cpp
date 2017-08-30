@@ -25,11 +25,11 @@
 RDA5807M::StatusResult RDA5807MWrapper::setFrequency(int freq)
 {
     // Frequency ranges assume US/Europe band selection
-    if (freq < 870)
+    if (freq < radio.getBandMinumumFrequency())
     {
         return RDA5807M::StatusResult { RDA5807M::StatusResult::BELOW_MIN };
     }
-    else if (freq > 1080)
+    else if (freq > radio.getBandMaximumFrequency())
     {
         return RDA5807M::StatusResult { RDA5807M::StatusResult::ABOVE_MAX };
     }
@@ -182,7 +182,7 @@ std::string RDA5807MWrapper::generateFreqMap(int length)
 
     std::string results{""};
     radio.setMute(true);
-    for (int freq = 880; freq <= 1080; freq+=1)
+    for (int freq = 881; freq <= 1081; freq+=2)
     {
         setFrequency(freq);
         if (length == 1)
@@ -254,7 +254,6 @@ RDA5807M::StatusResult RDA5807MWrapper::setSoftBlend(int softBlendEnable)
 uint32_t RDA5807MWrapper::getRssi(int UNUSED)
 {
     (void) UNUSED;
-
     return radio.getRssi();
 }
 
