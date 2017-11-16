@@ -4,15 +4,14 @@
 
 -include ../makefile.init
 
-RM := rm -rf
+RM := rm
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include RDA5807M/util/subdir.mk
--include RDA5807M/driver_wrapper/subdir.mk
--include RDA5807M/driver/subdir.mk
--include RDA5807M/command/subdir.mk
--include RDA5807M/subdir.mk
+-include util/subdir.mk
+-include driver_wrapper/subdir.mk
+-include driver/subdir.mk
+-include command/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -29,11 +28,11 @@ endif
 ifneq ($(strip $(CXX_DEPS)),)
 -include $(CXX_DEPS)
 endif
-ifneq ($(strip $(C_DEPS)),)
--include $(C_DEPS)
-endif
 ifneq ($(strip $(CPP_DEPS)),)
 -include $(CPP_DEPS)
+endif
+ifneq ($(strip $(C_DEPS)),)
+-include $(C_DEPS)
 endif
 endif
 
@@ -42,19 +41,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: Radio
+all: RDA5807M
 
 # Tool invocations
-Radio: $(OBJS) $(USER_OBJS)
+RDA5807M: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: Clang++ Linker'
-	clang++ -L/usr/local/lib/ -o "Radio" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: GCC C++ Linker'
+	g++  -o "RDA5807M" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(C_DEPS)$(CPP_DEPS) Radio
+	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) RDA5807M
 	-@echo ' '
 
 .PHONY: all clean dependents
