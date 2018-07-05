@@ -45,12 +45,16 @@ public:
         BLOCK_D = 0x0F
     };
 
-    enum SeekDirection {SEEK_UP = 0, SEEK_DOWN = 1};
-    enum SeekMode {WRAP_AT_LIMIT = 0, STOP_AT_LIMIT = 1};
-    enum Band {US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3};
-    enum ChannelSpacing {ONE_HUND_KHZ = 0, TWO_HUND_KHZ = 1, FIFTY_KHZ = 2, TWENTY_FIVE_KHZ = 3};
-    enum DeEmphasis {SEVENTY_FIVE_US = 0, FIFTY_US = 1};
-    enum RdsBlockErrors {ZERO_ERRORS = 0, ONE_TO_TWO_ERRORS = 1, THREE_TO_FIVE_ERRORS = 2, SIX_OR_MORE_ERRORS = 3};
+    enum class SeekDirection {SEEK_UP = 0, SEEK_DOWN = 1};
+    enum class SeekMode {WRAP_AT_LIMIT = 0, STOP_AT_LIMIT = 1};
+    enum class Band {US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3};
+    enum class ChannelSpacing {ONE_HUND_KHZ = 0, TWO_HUND_KHZ = 1,
+                                                 FIFTY_KHZ = 2,
+                                                 TWENTY_FIVE_KHZ = 3};
+    enum class DeEmphasis {SEVENTY_FIVE_US = 0, FIFTY_US = 1};
+    enum class RdsBlockErrors {ZERO_ERRORS = 0, ONE_TO_TWO_ERRORS = 1,
+                                                THREE_TO_FIVE_ERRORS = 2,
+                                                SIX_OR_MORE_ERRORS = 3};
 
     enum class StatusResult
     {
@@ -175,7 +179,7 @@ private:
     // Index of the first readable register
     static const uint8_t READ_REG_BASE_IDX = 0x0A;
 
-    // Index of the last reasdable register
+    // Index of the last readable register
     static const uint8_t READ_REG_MAX_IDX = 0x0F;
 
     // Default values for the register map
@@ -239,7 +243,7 @@ private:
 
     // The register map of the device. The first register is 0x00
     // and the last is 0x0F. Each register is two bytes (16 bits)
-    uint16_t registers[0x0F];
+    uint16_t registers[0x10];
 
     // The current band (freq range)
     Band band;

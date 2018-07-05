@@ -34,12 +34,19 @@ const uint16_t RDA5807M::REGISTER_MAP_DEFAULT_STATE[] = {
         /* Reg 0x0E */0x0000,
         /* Reg 0x0F */0x0000 };
 
-const std::string RDA5807M::STATUSRESULT_TO_STRING[] = { "SUCCESS", "ABOVE_MAX", "BELOW_MIN", "GENERAL_FAILURE", "I2C_FAILURE" };
-const std::string RDA5807M::BLOCK_ERRORS_TO_STRING[] = { "ZERO_ERRORS", "ONE_TO_TWO_ERRORS", "THREE_TO_FIVE_ERRORS", "SIX_OR_MORE_ERRORS"};
+const std::string RDA5807M::STATUSRESULT_TO_STRING[] = { "SUCCESS",
+                                                         "ABOVE_MAX",
+                                                         "BELOW_MIN",
+                                                         "GENERAL_FAILURE",
+                                                         "I2C_FAILURE" };
+const std::string RDA5807M::BLOCK_ERRORS_TO_STRING[] = { "ZERO_ERRORS",
+                                                         "ONE_TO_TWO_ERRORS",
+                                                         "THREE_TO_FIVE_ERRORS",
+                                                         "SIX_OR_MORE_ERRORS"};
 const uint16_t RDA5807M::FREQUENCY_RANGE_MIN[] = {870, 760, 760, 650};
 const uint16_t RDA5807M::FREQUENCY_RANGE_MAX[] = {1080, 910, 1080, 760};
 
-RDA5807M::RDA5807M() : band(US_EUR), i2cInterface(mraa::I2c(0, true))
+RDA5807M::RDA5807M() : band(Band::US_EUR), i2cInterface(mraa::I2c(0, true))
 {
     // Reset the local register map
     std::memcpy(registers, REGISTER_MAP_DEFAULT_STATE, REGISTER_MAP_SIZE_BYTES);
@@ -65,7 +72,7 @@ std::string RDA5807M::statusResultToString(StatusResult toConvert)
  */
 std::string RDA5807M::rdsBlockErrorToString(RdsBlockErrors toConvert)
 {
-    return BLOCK_ERRORS_TO_STRING[toConvert];
+    return BLOCK_ERRORS_TO_STRING[static_cast<int>(toConvert)];
 }
 
 /**
@@ -90,7 +97,7 @@ void RDA5807M::init()
     setStereo(true, false);
     setNewMethod(true, false); // KEEP ME ENABLED! Using new method offers a drastic performance reception improvement
     setVolume(0x00, false);
-    setChannelSpacing(RDA5807M::ChannelSpacing::ONE_HUND_KHZ, false);
+    setChannelSpacing(ChannelSpacing::ONE_HUND_KHZ, false);
     setBand(band, false);
     setTune(true, false);
     setEnabled(true, false);
@@ -400,16 +407,16 @@ RDA5807M::StatusResult RDA5807M::setBand(Band band, bool writeResultToDevice)
     uint8_t bandBits = US_EUR_BAND_SELECT;
     switch (band)
     {
-        case US_EUR:
+        case Band::US_EUR:
             bandBits = US_EUR_BAND_SELECT;
             break;
-        case JAP:
+        case Band::JAP:
             bandBits = JAPAN_BAND_SELECT;
             break;
-        case WORLD_WIDE:
+        case Band::WORLD_WIDE:
             bandBits = WORLD_WIDE_BAND_SELECT;
             break;
-        case EAST_EUROPE:
+        case Band::EAST_EUROPE:
             bandBits = EAST_EUR_BAND_SELECT;
             break;
     }
@@ -426,16 +433,16 @@ RDA5807M::StatusResult RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool 
 
     switch (spacing)
     {
-        case ONE_HUND_KHZ:
+        case ChannelSpacing::ONE_HUND_KHZ:
             spacingBits = CHANNEL_SPACE_100KHZ;
             break;
-        case TWO_HUND_KHZ:
+        case ChannelSpacing::TWO_HUND_KHZ:
             spacingBits = CHANNEL_SPACE_200KHZ;
             break;
-        case FIFTY_KHZ:
+        case ChannelSpacing::FIFTY_KHZ:
             spacingBits = CHANNEL_SPACE_50KHZ;
             break;
-        case TWENTY_FIVE_KHZ:
+        case ChannelSpacing::TWENTY_FIVE_KHZ:
             spacingBits = CHANNEL_SPACE_25KHZ;
             break;
     }
@@ -449,10 +456,10 @@ RDA5807M::StatusResult RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultTo
     uint8_t deemphasisBits = DEEMP_75_US;
     switch (de)
     {
-        case SEVENTY_FIVE_US:
+        case DeEmphasis::SEVENTY_FIVE_US:
             deemphasisBits = DEEMP_75_US;
             break;
-        case FIFTY_US:
+        case DeEmphasis::FIFTY_US:
             deemphasisBits = DEEMP_50_US;
             break;
     }
@@ -659,7 +666,7 @@ RDA5807M::RdsBlockErrors RDA5807M::getRdsErrorsForBlock(Register block)
     // registers is passed as a param
     else
     {
-        return SIX_OR_MORE_ERRORS;
+        return RdsBlockErrors::SIX_OR_MORE_ERRORS;
     }
 }
 
@@ -674,12 +681,12 @@ RDA5807M::Band RDA5807M::getBand()
 
 uint16_t RDA5807M::getBandMinumumFrequency()
 {
-    return FREQUENCY_RANGE_MIN[band];
+    return FREQUENCY_RANGE_MIN[static_cast<int>(band)];
 }
 
 uint16_t RDA5807M::getBandMaximumFrequency()
 {
-    return FREQUENCY_RANGE_MAX[band];
+    return FREQUENCY_RANGE_MAX[static_cast<int>(band)];
 
 }
 
