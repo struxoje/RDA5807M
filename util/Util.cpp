@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <string>
 #include <stdexcept>
+#include <algorithm>
+#include <vector>
 
 // Project includes
 #include "Util.hpp"
@@ -75,13 +77,16 @@ uint16_t Util::stringToUInt16(const std::string& str) {
 }
 
 bool Util::boolFromString(const std::string& str) {
-    if (str == "1" || str == "true") {
+    static const std::vector<std::string> VALID_TRUE_VALUES{"1", "true", "on", "yes"};
+    static const std::vector<std::string> VALID_FALSE_VALUES{"0", "false", "off", "no"};
+
+    if (std::find(VALID_TRUE_VALUES.begin(), VALID_TRUE_VALUES.end(), str) != VALID_TRUE_VALUES.end()) {
         return true;
-    } else if (str == "0" || str == "false") {
+    } else if (std::find(VALID_FALSE_VALUES.begin(), VALID_FALSE_VALUES.end(), str) != VALID_FALSE_VALUES.end()) {
         return false;
     }
 
-    throw std::invalid_argument("Booleans must be 0/false or 1/true");
+    throw std::invalid_argument("Booleans must be 0/false/off or 1/true/on");
 
 }
 
