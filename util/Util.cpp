@@ -5,6 +5,8 @@
 
 // System includes
 #include <cstdint>
+#include <string>
+#include <stdexcept>
 
 // Project includes
 #include "Util.hpp"
@@ -60,4 +62,38 @@ bool Util::boolFromInteger(int val)
         return false;
     }
 }
+
+uint16_t Util::stringToUInt16(const std::string& str) {
+    int asInt = std::stoi(str);
+
+    if (asInt > UINT16_MAX || asInt < 0) {
+        throw std::out_of_range(str + " must be in range [" +
+                                std::to_string(UINT16_MAX) + ":0]");
+    }
+
+    return static_cast<uint16_t>(asInt);
+}
+
+bool Util::boolFromString(const std::string& str) {
+    if (str == "1" || str == "true") {
+        return true;
+    } else if (str == "0" || str == "false") {
+        return false;
+    }
+
+    throw std::invalid_argument("Booleans must be 0/false or 1/true");
+
+}
+
+uint8_t Util::stringToUInt8(const std::string& str) {
+    int asInt = std::stoi(str);
+
+    if (asInt > UINT8_MAX || asInt < 0) {
+        throw std::out_of_range(str + " must be in range [" +
+                                std::to_string(UINT8_MAX) + ":0]");
+    }
+
+    return static_cast<uint8_t>(asInt);
+}
+
 

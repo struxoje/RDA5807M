@@ -9,8 +9,11 @@ RM := rm
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include util/subdir.mk
+-include network/subdir.mk
 -include driver_wrapper/subdir.mk
 -include driver/subdir.mk
+-include daemon/arg_parser/subdir.mk
+-include daemon/subdir.mk
 -include command/subdir.mk
 -include subdir.mk
 -include objects.mk

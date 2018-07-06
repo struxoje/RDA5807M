@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lmraa
+LIBS := -lmraa -lboost_system -lpthread -lboost_thread
 

@@ -2,158 +2,168 @@
  * CommandParser.cpp
  *
  *  Created on: Jun 30, 2017
- *      Author: bensherman
+ *      Author: Bennett Sherman
  */
 
 //System includes
 #include <iostream>
 #include <regex>
 #include <string>
+#include <stdexcept>
 
 // Project includes
 #include "Command.hpp"
 #include "CommandParser.hpp"
-#include "RDA5807M.hpp"
+#include "TcpServer.hpp"
 #include "RDA5807MWrapper.hpp"
 
 // Static initialization
-const Command<RDA5807M::StatusResult> CommandParser::STATUS_RESULT_COMMANDS[] =
+const Command<TcpServer> CommandParser::SERVER_CMDS[]
 {
-    Command<RDA5807M::StatusResult> { "FREQ", &RDA5807MWrapper::setFrequency, "Enter freq in as an integer"},
-    Command<RDA5807M::StatusResult> { "VOL", &RDA5807MWrapper::setVolume, "Enter volume from 0 to 15"},
-    Command<RDA5807M::StatusResult> { "MUTE", &RDA5807MWrapper::setMute, "1 to mute, 0 to unmute"},
-    Command<RDA5807M::StatusResult> { "BASSBOOST", &RDA5807MWrapper::setBassBoost, "1 to enable bass boost, 0 to disable"},
-    Command<RDA5807M::StatusResult> { "ENABLE", &RDA5807MWrapper::setRadioEnableState, "1 to enable/reset radio, 0 to disable"},
-    Command<RDA5807M::StatusResult> { "HIGHIMPEDANCEOUTPUT", &RDA5807MWrapper::setHighImpedanceOutput, "1 to enable HiZ output, 0 to disable. Unstable - avoid"},
-    Command<RDA5807M::StatusResult> { "STEREO", &RDA5807MWrapper::setStereo, "1 for stereo, 0 for mono"},
-    Command<RDA5807M::StatusResult> { "SEEK", &RDA5807MWrapper::setSeek, "1 to enable seeking, 0 to disable. If 1, other commands may cause seeking, so be sure to set back to 0"},
-    Command<RDA5807M::StatusResult> { "RDS", &RDA5807MWrapper::setRDS, "1 to enable RDS, 0 to disable"},
-    Command<RDA5807M::StatusResult> { "NEWMETHOD", &RDA5807MWrapper::setNewMethod, "1 to enable new demodulate method, 0 to disable. Strongly recommend using 1 permanently"},
-    Command<RDA5807M::StatusResult> { "SOFTRESET", &RDA5807MWrapper::setSoftReset, "Setting to 1 causes a soft reset"},
-    Command<RDA5807M::StatusResult> { "SOFTMUTE", &RDA5807MWrapper::setSoftMute, "1 to enable softmute, 0 to disable"},
-    Command<RDA5807M::StatusResult> { "TUNE", &RDA5807MWrapper::setTune, "1 to tune. Resets to 0 automatically after tune complete"},
-    Command<RDA5807M::StatusResult> { "AFCD", &RDA5807MWrapper::setAFCD, "1 toe enable automatic frequency control (AFC), 0 tod disable"},
-    Command<RDA5807M::StatusResult> { "DEEMPHASIS", &RDA5807MWrapper::setDeEmphasis, "SEVENTY_FIVE_US = 0, FIFTY_US = 1"},
-    Command<RDA5807M::StatusResult> { "BAND", &RDA5807MWrapper::setBand, "US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3"},
-    Command<RDA5807M::StatusResult> { "CHANNELSPACING", &RDA5807MWrapper::setChannelSpacing, "E_HUND_KHZ = 0, TWO_HUND_KHZ = 1, FIFTY_KHZ = 2, TWENTY_FIVE_KHZ = 3"},
-    Command<RDA5807M::StatusResult> { "SEEKDIR", &RDA5807MWrapper::setSeekDirection, "SEEK_UP = 0, SEEK_DOWN = 1"},
-    Command<RDA5807M::StatusResult> { "SEEKMODE", &RDA5807MWrapper::setSeekMode, "WRAP_AT_LIMIT = 0, STOP_AT_LIMIT = 1"},
-    Command<RDA5807M::StatusResult> { "SOFTBLEND", &RDA5807MWrapper::setSoftBlend, "1 to enable soft blend, 0 to disable" },
-    Command<RDA5807M::StatusResult> { "UPDATELOCALREGS", &RDA5807MWrapper::updateLocalRegisterMapFromDevice, "No param. Updates local regmap with regs from device"}
+    Command<TcpServer> { "SVR_INFO", &TcpServer::getAddressInfoHandler, "Gets the server's networking information"},
+    Command<TcpServer> { "CLIENTS_INFO", &TcpServer::getClientsInfoHandler, "Gets the IP and port #s of connected clients"}
 };
 
-const Command<std::string> CommandParser::STRING_RESULT_COMMANDS[] =
-{
-    Command<std::string> { "STATUS", &RDA5807MWrapper::getStatusString, "No param. Prints status info"},
-    Command<std::string> { "REGMAP", &RDA5807MWrapper::getRegisterMapString, "No param. Prints local register map"},
-    Command<std::string> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap, "Prints dotplot of freqs and their RSSI. No param for short search. Param=1 shows RDS support (takes a long time)"},
-    Command<std::string> { "RDSINFO" , &RDA5807MWrapper::getRdsInfoString, "No param. Prints RDS information"},
-    Command<std::string> { "GETREGFROMLOCALMAP", &RDA5807MWrapper::getLocalCopyOfReg, "Returns the local copy of the register addressed by the param (in hex)"},
-    Command<std::string> { "SNOOPRDSGROUP2", &RDA5807MWrapper::snoopRdsGroupTwo, "Snoops RDS group 2 for param (in ms) milliseconds at 10ms intervals"}
+const Command<RDA5807MWrapper> CommandParser::RADIO_CMDS[] {
+    Command<RDA5807MWrapper> { "FREQ", &RDA5807MWrapper::setFrequency, "Enter freq in as an integer"},
+    Command<RDA5807MWrapper> { "VOL", &RDA5807MWrapper::setVolume, "Enter volume from 0 to 15"},
+    Command<RDA5807MWrapper> { "MUTE", &RDA5807MWrapper::setMute, "1 to mute, 0 to unmute"},
+    Command<RDA5807MWrapper> { "BASSBOOST", &RDA5807MWrapper::setBassBoost, "1 to enable bass boost, 0 to disable"},
+    Command<RDA5807MWrapper> { "ENABLE", &RDA5807MWrapper::setRadioEnableState, "1 to enable/reset radio, 0 to disable"},
+    Command<RDA5807MWrapper> { "HIGHIMPEDANCEOUTPUT", &RDA5807MWrapper::setHighImpedanceOutput, "1 to enable HiZ output, 0 to disable. Unstable - avoid"},
+    Command<RDA5807MWrapper> { "STEREO", &RDA5807MWrapper::setStereo, "1 for stereo, 0 for mono"},
+    Command<RDA5807MWrapper> { "SEEK", &RDA5807MWrapper::setSeek, "1 to enable seeking, 0 to disable. If 1, other commands may cause seeking, so be sure to set back to 0"},
+    Command<RDA5807MWrapper> { "RDS", &RDA5807MWrapper::setRDS, "1 to enable RDS, 0 to disable"},
+    Command<RDA5807MWrapper> { "NEWMETHOD", &RDA5807MWrapper::setNewMethod, "1 to enable new demodulate method, 0 to disable. Strongly recommend using 1 permanently"},
+    Command<RDA5807MWrapper> { "SOFTRESET", &RDA5807MWrapper::setSoftReset, "Setting to 1 causes a soft reset"},
+    Command<RDA5807MWrapper> { "SOFTMUTE", &RDA5807MWrapper::setSoftMute, "1 to enable softmute, 0 to disable"},
+    Command<RDA5807MWrapper> { "TUNE", &RDA5807MWrapper::setTune, "1 to tune. Resets to 0 automatically after tune complete"},
+    Command<RDA5807MWrapper> { "AFCD", &RDA5807MWrapper::setAFCD, "1 toe enable automatic frequency control (AFC), 0 tod disable"},
+    Command<RDA5807MWrapper> { "DEEMPHASIS", &RDA5807MWrapper::setDeEmphasis, "SEVENTY_FIVE_US = 0, FIFTY_US = 1"},
+    Command<RDA5807MWrapper> { "BAND", &RDA5807MWrapper::setBand, "US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3"},
+    Command<RDA5807MWrapper> { "CHANNELSPACING", &RDA5807MWrapper::setChannelSpacing, "E_HUND_KHZ = 0, TWO_HUND_KHZ = 1, FIFTY_KHZ = 2, TWENTY_FIVE_KHZ = 3"},
+    Command<RDA5807MWrapper> { "SEEKDIR", &RDA5807MWrapper::setSeekDirection, "SEEK_UP = 0, SEEK_DOWN = 1"},
+    Command<RDA5807MWrapper> { "SEEKMODE", &RDA5807MWrapper::setSeekMode, "WRAP_AT_LIMIT = 0, STOP_AT_LIMIT = 1"},
+    Command<RDA5807MWrapper> { "SOFTBLEND", &RDA5807MWrapper::setSoftBlend, "1 to enable soft blend, 0 to disable" },
+    Command<RDA5807MWrapper> { "UPDATELOCALREGS", &RDA5807MWrapper::updateLocalRegisterMapFromDevice, "No param. Updates local regmap with regs from device"},
+    Command<RDA5807MWrapper> { "STATUS", &RDA5807MWrapper::getStatusString, "No param. Prints status info"},
+    Command<RDA5807MWrapper> { "REGMAP", &RDA5807MWrapper::getRegisterMapString, "No param. Prints local register map"},
+    Command<RDA5807MWrapper> { "FREQMAP" , &RDA5807MWrapper::generateFreqMap, "Prints dotplot of freqs and their RSSI. No param for short search. Param=1 shows RDS support (takes a long time)"},
+    Command<RDA5807MWrapper> { "RDSINFO" , &RDA5807MWrapper::getRdsInfoString, "No param. Prints RDS information"},
+    Command<RDA5807MWrapper> { "GETREGFROMLOCALMAP", &RDA5807MWrapper::getLocalCopyOfReg, "Returns the local copy of the register addressed by the param (in hex)"},
+    Command<RDA5807MWrapper> { "SNOOPRDSGROUP2", &RDA5807MWrapper::snoopRdsGroupTwo, "Snoops RDS group 2 for param (in ms) milliseconds at 10ms intervals"},
+    Command<RDA5807MWrapper> { "RSSI", &RDA5807MWrapper::getRssi, "No param. Prints the RSSI"},
+    Command<RDA5807MWrapper> { "RDSPI", &RDA5807MWrapper::getRdsPiCode, "No param. Prints RDS program identification code"},
+    Command<RDA5807MWrapper> { "RDSGROUPTYPE", &RDA5807MWrapper::getRdsGroupTypeCode, "No param. Prints RDS group type"},
+    Command<RDA5807MWrapper> { "RDSVERSION", &RDA5807MWrapper::getRdsVersionCode, "No param. Prints RDS version code"},
+    Command<RDA5807MWrapper> { "RDSTRAFPROGRAMID", &RDA5807MWrapper::getRdsTrafficProgramIdCode, "No param. Prints RDS traffic ID code"},
+    Command<RDA5807MWrapper> { "RDSPROGRAMTYPE", &RDA5807MWrapper::getRdsProgramTypeCode, "No param. Prints RDS program type code"}
 };
 
-const Command<uint32_t> CommandParser::UINT32_RESULT_COMMANDS[] =
+const size_t CommandParser::SERVER_CMDS_LIST_LENGTH = sizeof(SERVER_CMDS) / sizeof(Command<TcpServer>);
+const size_t CommandParser::RADIO_CMDS_LIST_LENGTH = sizeof(RADIO_CMDS)/sizeof(Command<RDA5807MWrapper>);
+
+
+const std::string CommandParser::FUNCTION_AND_PARAM_SEPARATOR = "=";
+const std::regex CommandParser::CMD_REGEX { "^([A-Z0-9_]+)" +
+                                FUNCTION_AND_PARAM_SEPARATOR +
+                                "?([-]?[0-9a-zA-Z:]*\\.?[0-9a-zA-Z:]*)"};
+const std::string CommandParser::LIST_CMDS_COMMAND_STRING {"HELP"};
+const std::string CommandParser::INVALID_SYNTAX_STRING {"~INVALID COMMAND SYNTAX"};
+const std::string CommandParser::NO_SUCH_COMMAND_EXISTS_STRING {"~NO SUCH COMMAND EXISTS"};
+const std::string CommandParser::EXEC_ERROR_BASE_STRING {"~ERROR"};
+const std::string CommandParser::EXECUTION_OK_STRING {"~OK"};
+const std::string CommandParser::UNUSED_PARAM_VALUE = "0";
+
+CommandParser::CommandParser(const TcpServerSharedPtr& tcpServer, const RDA5807MWrapperSharedPtr& radioWrapper):
+    tcpServer(tcpServer), radioWrapper(radioWrapper)
 {
-    Command<uint32_t> { "RSSI", &RDA5807MWrapper::getRssi, "No param. Prints the RSSI"},
-    Command<uint32_t> { "RDSPI", &RDA5807MWrapper::getRdsPiCode, "No param. Prints RDS program identification code"},
-    Command<uint32_t> { "RDSGROUPTYPE", &RDA5807MWrapper::getRdsGroupTypeCode, "No param. Prints RDS group type"},
-    Command<uint32_t> { "RDSVERSION", &RDA5807MWrapper::getRdsVersionCode, "No param. Prints RDS version code"},
-    Command<uint32_t> { "RDSTRAFPROGRAMID", &RDA5807MWrapper::getRdsTrafficProgramIdCode, "No param. Prints RDS traffic ID code"},
-    Command<uint32_t> { "RDSPROGRAMTYPE", &RDA5807MWrapper::getRdsProgramTypeCode, "No param. Prints RDS program type code"}
-};
 
-const size_t CommandParser::STATUS_RESULT_COMMANDS_LIST_LENGTH = sizeof(STATUS_RESULT_COMMANDS) / sizeof(Command<RDA5807M::StatusResult>);
-const size_t CommandParser::STRING_RESULT_COMMANDS_LIST_LENGTH = sizeof(STRING_RESULT_COMMANDS) / sizeof(Command<std::string>);
-const size_t CommandParser::UINT32_RESULT_COMMANDS_LIST_LENGTH = sizeof(UINT32_RESULT_COMMANDS) / sizeof(Command<uint32_t>);
-
-const std::regex CommandParser::CMD_REGEX { "^([a-zA-Z0-9]+){1}=*([0-9]*)"};
-const std::string CommandParser::LIST_CMDS_COMMAND_STRING = "HELP";
+}
 
 /**
  * The command specified by LIST_CMDS_COMMAND_STRING will result in a list of supported
- * functions being printed. If the entered command is invalid, "COMMAND NOT VALID!" is returned.
- * Otherwise, the result of the execution is returned.
+ * functions being printed. If the command was invalid or there was a parsing error, a
+ * string reporting the error will be returned. If the parse operation was successful,
+ * the result of the execution will be returned.
+ *
+ * TODO: Throw exceptions for bad commands
  */
-std::string CommandParser::execute(std::string& unparsedCommand)
+std::string CommandParser::execute(const std::string& unparsedCommand)
 {
     std::string cmd;
-    int param;
+    std::string param;
 
     bool parseResult = parse(unparsedCommand, cmd, param);
     if (!parseResult)
     {
-        return "COMMAND NOT VALID!";
+        return INVALID_SYNTAX_STRING;
     }
 
     if (cmd.compare(LIST_CMDS_COMMAND_STRING) == 0)
     {
-        return getCommandStringList();
+        return EXECUTION_OK_STRING + getCommandStringList();
     }
 
-    for (size_t idx = 0; idx < STATUS_RESULT_COMMANDS_LIST_LENGTH; ++idx)
+    // Attempt to find and execute the specified command
+    try
     {
-        Command<RDA5807M::StatusResult> statusResultCmd = STATUS_RESULT_COMMANDS[idx];
-        if (cmd.compare(statusResultCmd.getCommandString()) == 0)
+        std::string funcUpdatableString = EXECUTION_OK_STRING;
+
+        // Radio commands
+        for (size_t idx = 0; idx < RADIO_CMDS_LIST_LENGTH; ++idx)
         {
-            std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
-            return RDA5807M::statusResultToString(statusResultCmd.exec(param, radioWrapper));
+            Command<RDA5807MWrapper>radioCmd = RADIO_CMDS[idx];
+            if (cmd.compare(radioCmd.getCommandString()) == 0)
+            {
+                std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
+                radioCmd.exec(param, &funcUpdatableString, *radioWrapper);
+                return funcUpdatableString;
+            }
+        }
+
+        // Server commands
+        for (size_t idx = 0; idx < SERVER_CMDS_LIST_LENGTH; ++idx)
+        {
+            Command<TcpServer>serverCmd = SERVER_CMDS[idx];
+            if (cmd.compare(serverCmd.getCommandString()) == 0)
+            {
+                std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
+                serverCmd.exec(param, &funcUpdatableString, *tcpServer);
+                return funcUpdatableString;
+            }
         }
     }
-
-    for (size_t idx = 0; idx < STRING_RESULT_COMMANDS_LIST_LENGTH; ++idx)
+    catch (const std::exception& err)
     {
-        Command<std::string> stringResultCmd = STRING_RESULT_COMMANDS[idx];
-        if (cmd.compare(stringResultCmd.getCommandString()) == 0)
-        {
-            std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
-            return stringResultCmd.exec(param, radioWrapper);
-        }
+        return EXEC_ERROR_BASE_STRING + "; " + err.what();
     }
 
-    for (size_t idx = 0; idx < UINT32_RESULT_COMMANDS_LIST_LENGTH; ++idx)
-    {
-        Command<uint32_t> uintResultCmd = UINT32_RESULT_COMMANDS[idx];
-        if (cmd.compare(uintResultCmd.getCommandString()) == 0)
-        {
-            std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
-            return std::to_string(uintResultCmd.exec(param, radioWrapper));
-        }
-    }
-
-    return "COMMAND NOT VALID!";
+    return NO_SUCH_COMMAND_EXISTS_STRING;
 }
 
 /**
  * Returns a list of commands supported by this interpreter.
  */
-std::string CommandParser::getCommandStringList()
+std::string CommandParser::getCommandStringList() const
 {
-    std::string cmdList = "SUPPORTED COMMANDS:\n";
+    std::string cmdList = "\nSUPPORTED COMMANDS:\n";
 
-    cmdList.append("\nRETURN STATUS: \n");
-    for (size_t idx = 0; idx < STATUS_RESULT_COMMANDS_LIST_LENGTH; ++idx)
+    cmdList.append("RADIO COMMANDS: \n");
+    for (size_t idx = 0; idx < RADIO_CMDS_LIST_LENGTH; ++idx)
     {
-        cmdList.append(STATUS_RESULT_COMMANDS[idx].getCommandString());
+        cmdList.append(RADIO_CMDS[idx].getCommandString());
         cmdList.append(" - ");
-        cmdList.append(STATUS_RESULT_COMMANDS[idx].getCommandDescription());
+        cmdList.append(RADIO_CMDS[idx].getCommandDescription());
         cmdList.append("\n");
     }
 
-    cmdList.append("\nRETURN STRING: \n");
-    for (size_t idx = 0; idx < STRING_RESULT_COMMANDS_LIST_LENGTH; ++idx)
+    cmdList.append("\nSERVER COMMANDS: \n");
+    for (size_t idx = 0; idx < SERVER_CMDS_LIST_LENGTH; ++idx)
     {
-        cmdList.append(STRING_RESULT_COMMANDS[idx].getCommandString());
+        cmdList.append(SERVER_CMDS[idx].getCommandString());
         cmdList.append(" - ");
-        cmdList.append(STRING_RESULT_COMMANDS[idx].getCommandDescription());
-        cmdList.append("\n");
-    }
-
-    cmdList.append("\nRETURN UINT32: \n");
-    for (size_t idx = 0; idx < UINT32_RESULT_COMMANDS_LIST_LENGTH; ++idx)
-    {
-        cmdList.append(UINT32_RESULT_COMMANDS[idx].getCommandString());
-        cmdList.append(" - ");
-        cmdList.append(UINT32_RESULT_COMMANDS[idx].getCommandDescription());
+        cmdList.append(SERVER_CMDS[idx].getCommandDescription());
         cmdList.append("\n");
     }
 
@@ -162,27 +172,30 @@ std::string CommandParser::getCommandStringList()
 
 /**
  * Commands with params are of the form:
- * <COMMAND>=<VAL>
+ * <COMMAND>=<VAL>, where <VAL> is a positive or negative number
+ * (decimal allowed), or is a string.
  *
  * Commands with no params are of the form:
  * <COMMAND>
- * and -1 is used as the value
+ * and " " is used as the value
  *
  * Returns true if a valid command is found, false otherwise
  */
-bool CommandParser::parse(const std::string& unparsedCommand, std::string& command, int& param)
+bool CommandParser::parse(const std::string& unparsedCommand, std::string& command, std::string& param) const
 {
     // Find the command and value if they exist
     std::smatch matches;
 
-    std::regex_match(unparsedCommand, matches, CMD_REGEX);
+    std::regex_search(unparsedCommand, matches, CMD_REGEX);
+
     if (matches.size() != 3)
     {
         return false;
     }
 
-    // matches[0] should be the whole string
-    if (unparsedCommand.compare(matches[0].str()) != 0)
+    // matches[0] should be the whole string, minus any trailing whitespace
+    if (unparsedCommand.substr(0, unparsedCommand.find_first_of("\r\n")).
+            compare(matches[0].str()) != 0)
     {
         return false;
     }
@@ -196,8 +209,10 @@ bool CommandParser::parse(const std::string& unparsedCommand, std::string& comma
     }
     else
     {
-        param = std::stoi(matches[2].str());
+        param = matches[2].str();
     }
 
     return true;
 }
+
+

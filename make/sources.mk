@@ -24,8 +24,10 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 command \
+daemon/arg_parser \
+daemon \
 driver \
 driver_wrapper \
-. \
+network \
 util \
 

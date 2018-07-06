@@ -419,6 +419,8 @@ RDA5807M::StatusResult RDA5807M::setBand(Band band, bool writeResultToDevice)
         case Band::EAST_EUROPE:
             bandBits = EAST_EUR_BAND_SELECT;
             break;
+        default:
+            return StatusResult::INVALID_PARAMETER;
     }
     setRegister(REG_0x03, bandBits, BAND);
 
@@ -445,6 +447,8 @@ RDA5807M::StatusResult RDA5807M::setChannelSpacing(ChannelSpacing spacing, bool 
         case ChannelSpacing::TWENTY_FIVE_KHZ:
             spacingBits = CHANNEL_SPACE_25KHZ;
             break;
+        default:
+            return StatusResult::INVALID_PARAMETER;
     }
     setRegister(REG_0x03, spacingBits, SPACE);
 
@@ -462,6 +466,8 @@ RDA5807M::StatusResult RDA5807M::setDeEmphasis(DeEmphasis de, bool writeResultTo
         case DeEmphasis::FIFTY_US:
             deemphasisBits = DEEMP_50_US;
             break;
+        default:
+            return StatusResult::INVALID_PARAMETER;
     }
     setRegister(REG_0x04, deemphasisBits, DE);
 

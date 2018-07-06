@@ -17,7 +17,7 @@ CPP_DEPS += \
 driver_wrapper/%.o: ../driver_wrapper/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++14 -I../util -I../driver_wrapper -I../command -I../driver -O3 -g -Wall -Wextra -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -std=c++14 -I../util -I../daemon -I../network -I../driver_wrapper -I../command -I../driver -I../daemon/arg_parser -O3 -g -Wall -Wextra -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

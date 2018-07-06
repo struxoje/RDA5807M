@@ -2,49 +2,49 @@
  * Command.hpp
  *
  *  Created on: Jun 30, 2017
- *      Author: bensherman
+ *      Author: Bennett Sherman
  */
 
 #ifndef COMMAND_COMMAND_HPP_
 #define COMMAND_COMMAND_HPP_
 
 // Stdlib includes
-#include <cstring>
+#include <string>
 
 // Project includes
-#include "RDA5807M.hpp"
-#include "RDA5807MWrapper.hpp"
+// <none>
 
-template<typename T>
+template <typename Commandable>
 class Command
 {
 public:
 
     // Alias declarations to the rescue!
-    using WrapperFunction = T (RDA5807MWrapper::*)(int);
+    using CommandFunction = void (Commandable::*)(const std::string&, std::string*);
 
     ////////////////////////////////
     // Public interface functions //
     ////////////////////////////////
-    Command(std::string commandStringParam, WrapperFunction cmdFuncParam, std::string descriptionParam) :
+    Command(std::string commandStringParam, CommandFunction cmdFuncParam, std::string descriptionParam) :
             commandString(commandStringParam), cmdFunc(cmdFuncParam), description(descriptionParam) {};
 
     /**
-     * Executes the function pointed to by cmdFunc with the parameter param.
-     * wrapRef is used as the object on which cmdFunc is called.
-     * The result of the function is returned
+     * Executes the function pointed to by cmdFunc with the parameter funcParam.
+     * cmdRef is used as the object on which cmdFunc is called.
+     * updatableMsg is a string intended to be updated by the client if it wants to
+     * return information to the caller.
      */
-    T exec(int param, RDA5807MWrapper& wrapRef) const
+    void exec(const std::string& funcParam, std::string* updatableMsg, Commandable& cmdRef) const
     {
-        return (wrapRef.*cmdFunc)(param);
+        (cmdRef.*cmdFunc)(funcParam, updatableMsg);
     }
 
-    const std::string& getCommandString() const
+    std::string getCommandString() const
     {
         return commandString;
     }
 
-    const std::string& getCommandDescription() const
+    std::string getCommandDescription() const
     {
         return description;
     }
@@ -54,7 +54,7 @@ private:
     // Private member variables //
     //////////////////////////////
     const std::string commandString;
-    const WrapperFunction cmdFunc;
+    const CommandFunction cmdFunc;
     const std::string description;
 
 };

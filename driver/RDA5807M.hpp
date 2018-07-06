@@ -45,20 +45,18 @@ public:
         BLOCK_D = 0x0F
     };
 
-    enum class SeekDirection {SEEK_UP = 0, SEEK_DOWN = 1};
-    enum class SeekMode {WRAP_AT_LIMIT = 0, STOP_AT_LIMIT = 1};
-    enum class Band {US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3};
-    enum class ChannelSpacing {ONE_HUND_KHZ = 0, TWO_HUND_KHZ = 1,
-                                                 FIFTY_KHZ = 2,
-                                                 TWENTY_FIVE_KHZ = 3};
-    enum class DeEmphasis {SEVENTY_FIVE_US = 0, FIFTY_US = 1};
-    enum class RdsBlockErrors {ZERO_ERRORS = 0, ONE_TO_TWO_ERRORS = 1,
-                                                THREE_TO_FIVE_ERRORS = 2,
-                                                SIX_OR_MORE_ERRORS = 3};
+    enum class SeekDirection : uint8_t {SEEK_UP = 0, SEEK_DOWN = 1, SIZE = 2};
+    enum class SeekMode : uint8_t {WRAP_AT_LIMIT = 0, STOP_AT_LIMIT = 1, SIZE = 2};
+    enum class Band : uint8_t {US_EUR = 0, JAP = 1, WORLD_WIDE = 2, EAST_EUROPE= 3, SIZE = 4};
+    enum class ChannelSpacing : uint8_t {ONE_HUND_KHZ = 0, TWO_HUND_KHZ = 1, FIFTY_KHZ = 2, TWENTY_FIVE_KHZ = 3,
+                                                                                            SIZE = 4};
+    enum class DeEmphasis : uint8_t {SEVENTY_FIVE_US = 0, FIFTY_US = 1, SIZE = 2};
+    enum class RdsBlockErrors : uint8_t {ZERO_ERRORS = 0, ONE_TO_TWO_ERRORS = 1, THREE_TO_FIVE_ERRORS = 2,
+                                                                                 SIX_OR_MORE_ERRORS = 3, SIZE = 4};
 
     enum class StatusResult
     {
-        SUCCESS = 0, ABOVE_MAX = 1, BELOW_MIN = 2, GENERAL_FAILURE = 3, I2C_FAILURE = 4
+        SUCCESS = 0, ABOVE_MAX = 1, BELOW_MIN = 2, GENERAL_FAILURE = 3, I2C_FAILURE = 4, INVALID_PARAMETER = 5
     };
 
     ////////////////////////////////
