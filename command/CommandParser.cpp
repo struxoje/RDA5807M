@@ -108,7 +108,7 @@ std::string CommandParser::execute(const std::string& unparsedCommand)
     // Attempt to find and execute the specified command
     try
     {
-        std::string funcUpdatableString = EXECUTION_OK_STRING;
+        std::string funcUpdatableString = EXECUTION_OK_STRING + "\n";
 
         // Radio commands
         for (size_t idx = 0; idx < RADIO_CMDS_LIST_LENGTH; ++idx)
@@ -118,6 +118,7 @@ std::string CommandParser::execute(const std::string& unparsedCommand)
             {
                 std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
                 radioCmd.exec(param, &funcUpdatableString, *radioWrapper);
+                funcUpdatableString += "\n";
                 return funcUpdatableString;
             }
         }
