@@ -118,7 +118,6 @@ std::string CommandParser::execute(const std::string& unparsedCommand)
             {
                 std::cout << "Executing: " << cmd << "(" << param << ")" << std::endl;
                 radioCmd.exec(param, &funcUpdatableString, *radioWrapper);
-                funcUpdatableString += "\n";
                 return funcUpdatableString;
             }
         }
