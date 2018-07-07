@@ -49,6 +49,10 @@ public:
         return description;
     }
 
+    std::pair<std::string, Command<Commandable>> asPair() {
+        return std::make_pair(commandString, *this);
+    }
+
 private:
     //////////////////////////////
     // Private member variables //

@@ -13,6 +13,7 @@
 #include <regex>
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 // Project includes
 #include "Command.hpp"
@@ -43,8 +44,8 @@ private:
     /////////////////////////////
     // Private class Constants //
     /////////////////////////////
-    static const Command<TcpServer> SERVER_CMDS[];
-    static const Command<RDA5807MWrapper> RADIO_CMDS[];
+    static const std::unordered_map<std::string, Command<TcpServer>> SERVER_CMDS;
+    static const std::unordered_map<std::string, Command<RDA5807MWrapper>> RADIO_CMDS;
 
     // The regex string used to parse commands
     static const std::regex CMD_REGEX;
@@ -57,10 +58,6 @@ private:
 
     // When this command is entered, a list of commands is returned
     static const std::string LIST_CMDS_COMMAND_STRING;
-
-    // Lengths, in terms of the number of elements, in the different command lists
-    static const size_t SERVER_CMDS_LIST_LENGTH;
-    static const size_t RADIO_CMDS_LIST_LENGTH;
 
     // Constant strings representing different parse/execution results
     static const std::string NO_SUCH_COMMAND_EXISTS_STRING;
